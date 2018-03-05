@@ -1,7 +1,7 @@
 import re
 
 from string import Template
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 from secret import secret
 
 
@@ -24,7 +24,7 @@ def decrypt_secrets(items):
 # replace files
 for file_location in config.sections():
     values = dict(config.items(file_location))
-    values = decrypt_secrets(values.iteritems())
+    values = decrypt_secrets(values.items())
     template = open(file_location).read()
     replacement = Template(template).substitute(values)
     open(file_location[:-4], 'w').write(replacement)
