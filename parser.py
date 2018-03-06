@@ -2,7 +2,7 @@ import re
 
 from string import Template
 from configparser import ConfigParser
-from secret import secret
+from secret import Encryption, SecretKey
 
 
 # read configs
@@ -10,13 +10,17 @@ config = ConfigParser()
 config.optionxform = str
 config.read('values.cfg')
 
+# instance encryption
+secret_key = SecretKey('my secret key ninja_+=')
+encryption = Encryption(secret_key.generate())
+
 
 # Find and decrypt secret values
 def decrypt_secrets(items):
     def call(value):
         secret_val = re.search('secret\((.+?)\)', value)
         if secret_val:
-            return secret.decrypt(secret_val.group(1))
+            return encryption.decrypt(secret_val.group(1))
         return value
     return dict(map(lambda i: (i[0], call(i[1])), items))
 

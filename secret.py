@@ -1,46 +1,80 @@
 import binascii
 
 from Crypto.Cipher import AES
-from Crypto.Util import Counter
-from Crypto import Random
 from Crypto.Hash import SHA256
 
 
-class CTR:
-    def __init__(self, key):
+class SecretKey:
+    def __init__(self, key_pass):
         """
-        Get a key as an hexdecimal format
+        Initialize with a key pass in plaintext in utf-8 format
         """
-        self.key = binascii.unhexlify(key)
+        self.key_pass = key_pass
 
-    def decrypt(self, enc):
+    def generate(self):
         """
-        Decrypt values from a hexdecimal format
+        Generate secret key from key pass
         """
-        enc = binascii.unhexlify(enc)
-        iv = enc[:AES.block_size]
-        enc = enc[AES.block_size:]
-        ctr = Counter.new(128, initial_value=self._counter_iv(iv))
-        cipher = AES.new(self.key, AES.MODE_CTR, counter=ctr)
-        return cipher.decrypt(enc).decode("utf-8")
+        b_key_pass = self.key_pass.encode('utf-8')
+        sha256 = SHA256.new(b_key_pass)
+        secret_key = sha256.digest()
+        return binascii.hexlify(secret_key).decode('utf-8')
+
+
+class Encryption:
+    def __init__(self, secret_key):
+        """
+        Initialize with a security key in hexadecimal utf-8 format
+        """
+        self.key = binascii.unhexlify(secret_key)
+        self.sep = '\\'
 
     def encrypt(self, raw):
         """
-        Encrypt and return in hexdecimal format
+        Encrypt and return an hexdecimal utf-8 format
         """
-        iv = Random.new().read(AES.block_size)
-        ctr = Counter.new(128, initial_value=self._counter_iv(iv))
-        cipher = AES.new(self.key, AES.MODE_CTR, counter=ctr)
-        return binascii.hexlify(iv + cipher.encrypt(raw))
+        b_raw = raw.encode('utf-8')
+        cipher = AES.new(self.key, AES.MODE_EAX)
+        b_cipher, tag = cipher.encrypt_and_digest(b_raw)
+        return self._build_encrypt(cipher.nonce, b_cipher, tag)
+
+    def decrypt(self, encrypt):
+        """
+        Decrypt values from a hexdecimal utf-8 format to plaintext
+        """
+        nonce, tag, b_cipher = self._split_encrypt(encrypt)
+        cipher = AES.new(self.key, AES.MODE_EAX, nonce=nonce)
+        try:
+            return cipher.decrypt_and_verify(b_cipher, tag).decode("utf-8")
+        except ValueError:
+            raise ValueError("ERROR: Encryption '" + encrypt + "' is corrupted.")
+
+    def _build_encrypt(self, nonce, b_cipher, tag):
+        """
+        Build a unique encrypt with all sections of cipher
+        """
+        return self._to_hex(nonce) + self.sep + self._to_hex(tag) + self.sep + self._to_hex(b_cipher)
+
+    def _split_encrypt(self, encrypt):
+        """
+        Split encrypt on sections to decrypt and check data integrity
+        """
+        try:
+            nonce, tag, cipher = encrypt.split(self.sep)
+            return self._to_bin(nonce), self._to_bin(tag), self._to_bin(cipher)
+        except ValueError:
+            raise ValueError("ERROR: Encryption '" + encrypt + "' is corrupted.")
 
     @staticmethod
-    def _counter_iv(iv):
-        return int(binascii.hexlify(iv), 16)
+    def _to_hex(binary):
+        """
+        Convert binary string into hexdecimal decoded in utf8
+        """
+        return binascii.hexlify(binary).decode('utf-8')
 
-
-sha256 = SHA256.new()
-raw_key = 'mysecretkeynjanjnja_+='.encode('utf-8')
-sha256.update(raw_key)
-secret_key = binascii.hexlify(sha256.digest())
-
-secret = CTR(secret_key)
+    @staticmethod
+    def _to_bin(hexadecimal):
+        """
+        Convert hexadecimal string encoded in utf-8 into binary
+        """
+        return binascii.unhexlify(hexadecimal.encode('utf-8'))
