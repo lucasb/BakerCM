@@ -1,16 +1,22 @@
 import re
 
 from string import Template
-from configparser import ConfigParser
+from configparser import ConfigParser, ExtendedInterpolation
+
 from baker.secret import Encryption, SecretKey
+from baker.settings import HOME_DIR
 
 
 def replace():
     # read configs
     config = ConfigParser()
     config.optionxform = str
+    config._interpolation = ExtendedInterpolation()
+    # config.add_section('DEFAULT')
+    # config.default_section['HOME_DIR'] = HOME_DIR
+    config.set('DEFAULT', 'HOME_DIR', HOME_DIR)
     config.read('values.cfg')
-
+    print(config.values())
     # instance encryption
     encryption = Encryption(SecretKey().key)
 

@@ -20,6 +20,9 @@ class SecretKey:
 
     @property
     def key(self):
+        """
+        Read secret key from storage file
+        """
         try:
             return open(STORAGE_KEY_PATH).read()
         except FileNotFoundError:
