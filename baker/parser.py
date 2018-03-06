@@ -12,8 +12,7 @@ def replace():
     config.read('values.cfg')
 
     # instance encryption
-    secret_key = SecretKey('my secret key ninja_+=')
-    encryption = Encryption(secret_key.generate())
+    encryption = Encryption(SecretKey().key)
 
     # find and decrypt secret values
     def decrypt_secrets(items):

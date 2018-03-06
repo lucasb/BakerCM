@@ -2,23 +2,31 @@ import binascii
 
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
+from baker.settings import STORAGE_KEY_PATH
 
 
 class SecretKey:
-    def __init__(self, key_pass):
-        """
-        Initialize with a key pass in plaintext in utf-8 format
-        """
-        self.key_pass = key_pass
-
-    def generate(self):
+    @staticmethod
+    def generate(key_pass):
         """
         Generate secret key from key pass
         """
-        b_key_pass = self.key_pass.encode('utf-8')
+        b_key_pass = key_pass.encode('utf-8')
         sha256 = SHA256.new(b_key_pass)
         secret_key = sha256.digest()
-        return binascii.hexlify(secret_key).decode('utf-8')
+        secret_store = binascii.hexlify(secret_key).decode('utf-8')
+        open(STORAGE_KEY_PATH, 'w').write(secret_store)
+        return secret_store
+
+    @property
+    def key(self):
+        try:
+            return open(STORAGE_KEY_PATH).read()
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                "Secret key not found at: '" + STORAGE_KEY_PATH + "'. "
+                "Are you sure it was generated and available on this path?"
+            )
 
 
 class Encryption:
@@ -47,7 +55,9 @@ class Encryption:
         try:
             return cipher.decrypt_and_verify(b_cipher, tag).decode("utf-8")
         except ValueError:
-            raise ValueError("ERROR: Encryption '" + encrypt + "' is corrupted.")
+            raise ValueError(
+                "ERROR: Encryption '" + encrypt + "' is corrupted."
+            )
 
     def _build_encrypt(self, nonce, b_cipher, tag):
         """
@@ -63,7 +73,9 @@ class Encryption:
             nonce, tag, cipher = encrypt.split(self.sep)
             return self._to_bin(nonce), self._to_bin(tag), self._to_bin(cipher)
         except ValueError:
-            raise ValueError("ERROR: Encryption '" + encrypt + "' is corrupted.")
+            raise ValueError(
+                "ERROR: Encryption '" + encrypt + "' is corrupted."
+            )
 
     @staticmethod
     def _to_hex(binary):

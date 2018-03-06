@@ -19,6 +19,7 @@ if __name__ == '__main__':
 
     print('Starting Baker')
 
-    SecretKey('PASS 123')
+    SecretKey.generate('my secret key ninja_+=')
+    replace()
 
     print('\n SUCCESS: All done with success!  \o/')
