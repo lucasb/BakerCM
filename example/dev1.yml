@@ -1,0 +1,23 @@
+# Example of configs in yaml
+
+env: development1
+templates:
+  - template: /home/darch/poc/BakerCM/example/templates/app.config.tpl
+    variables:
+      - HOST: dev-host.db
+      - PORT: 9000
+      - USER: dbuser
+    secrets:
+      - PASSWORD: '2ce6c4ac2a7b5e159ced946f4c670608\12a45cf88d4628375f3d9216cf80a544\c558deb1eb35efad642fde944162d7db8e30ad0da246f4972b37b943'
+  - name: http
+    template: /home/darch/poc/BakerCM/example/templates/http.conf.tpl
+    path: /home/darch/poc/BakerCM/example/http.conf
+    user: darch
+    group: users
+    mode: 0755
+    variables:
+      - HTTP_TMP_DIR: /var/null
+      - HTTP_TIMEOUT: 500
+  - name: 'app move'
+    template: /home/darch/poc/BakerCM/example/http.conf
+    path: /home/darch/poc/BakerCM/example/templates/http.conf

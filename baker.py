@@ -4,7 +4,7 @@
 if __name__ == '__main__':
     try:
         from baker.secret import SecretKey
-        from baker.parser import replace
+        from baker.parser import ReadConfig
     except ImportError:
         # The above import may fail for some other reason. Ensure that the
         # issue is really that Baker is missing to avoid masking other exceptions.
@@ -20,7 +20,8 @@ if __name__ == '__main__':
 
     print('Starting Baker')
 
-    SecretKey.generate('my secret key ninja_+=')
-    replace()
+    #SecretKey.generate('my secret key ninja_+=')
+    ReadConfig('./example/dev2.cfg')
+    # replace()
 
     print('\n SUCCESS: All done with success!  \o/')
