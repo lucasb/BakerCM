@@ -1,5 +1,3 @@
-import re
-
 from string import Template
 from configparser import ConfigParser
 
@@ -15,7 +13,7 @@ class ReadConfig:
 
         if filename.endswith('.cfg'):
             self.dict_from_ini()
-        # elif filename.endswith('.yml'):
+        # elif filename.endswith('.yml'): # TODO: Add support to configurate via yaml file
         #     self.dict_from_yaml()
         else:
             raise FileExistsError('Unsupported file format.')
@@ -36,7 +34,7 @@ class ReadConfig:
                 template = self._get_values(parser, name + ':template')
 
                 if template:
-                    template['name'] = name
+                    template['name'] = name  # FIXME: Check with name is note enable
                 else:
                     raise AttributeError('Attribute template is required.')
 
@@ -79,50 +77,30 @@ class BakerTemplate(Template):
     delimiter = '{{'
     pattern = r'''
         \{\{\ *(?:
-        (?P<escaped>\{\{)|
-        (?P<named>[_a-z][_a-z0-9]*)\ *\}\}|
-        \b\B(?P<braced>) |
-        (?P<invalid>)
+        (?P<escaped>{)                    | # escape with {{{escape}}} or {{{ escape }}} 
+        (?P<named>[_a-z][_a-z0-9]*)\ *}}  | # identifier {{var}} or {{ var }}
+        \b\B(?P<braced>)                  | # braced identifier disabled
+        (?P<invalid>)                       # ill-formed delimiter expr
         )
     '''
+    # FIXME: Replace escape regex to work with braces in the ends too
 
 
+# TODO: Add support for permission using user, group, mode config attr
 class ReplaceTemplate:
     def __init__(self, configs):
         self.configs = configs
 
     def replace(self):
-        #for config in self.configs:
-        config = self.configs[0]
-        print(config.template)
-        template = open(config.template).read()
-        print(template)
-        replaced = BakerTemplate(template).substitute(config.variables)
-        print(replaced)
+        # FIXME: Support ignore care replace
+        for config in self.configs:
+            template_file = open(config.template).read()
+            template = BakerTemplate(template_file)
+            replaced = template.substitute(config.variables)
+            target = config.template
 
-
-def replace():
-    # read configs
-    config = ConfigParser()
-    config.optionxform = str
-    config.read('values.cfg')
-
-    # instance encryption
-    encryption = Encryption(SecretKey().key)
-
-    # find and decrypt secret values
-    def decrypt_secrets(items):
-        def call(value):
-            secret_val = re.search('_secret\((.+?)\)', value)
-            if secret_val:
-                return encryption.decrypt(secret_val.group(1))
-            return value
-        return dict(map(lambda i: (i[0], call(i[1])), items))
-
-    # replace files
-    for file_location in config.sections():
-        values = dict(config.items(file_location))
-        values = decrypt_secrets(values.items())
-        template = open(file_location).read()
-        replacement = Template(template).substitute(values)
-        open(file_location[:-4], 'w').write(replacement)
+            if hasattr(config, 'path'):
+                target = config.path
+            if target.endswith('.tpl'):
+                target = target[:-4]
+            open(target, 'w').write(replaced)
