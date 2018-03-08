@@ -76,28 +76,29 @@ class Config:
 
 
 class BakerTemplate(Template):
-    delimiter = '{{ '
+    delimiter = '{{'
     pattern = r'''
-        \{\{ (?:
-           (?P<escaped>\\)                | # Expression [-- will become [-
-           (?P<named>[_a-z][_a-z0-9]*) \}\} | # -, [, ], and \n can't be used in names
-           \b\B(?P<braced>)              | # Braced names disabled
-           (?P<invalid>)                 | #
+        \{\{\ *(?:
+        (?P<escaped>\{\{)|
+        (?P<named>[_a-z][_a-z0-9]*)\ *\}\}|
+        \b\B(?P<braced>) |
+        (?P<invalid>)
         )
     '''
 
 
 class ReplaceTemplate:
     def __init__(self, configs):
-        print(configs[0].variables)
         self.configs = configs
 
     def replace(self):
-        for config in self.configs:
-            template = open(config.template).read()
-            print(template)
-            replaced = BakerTemplate(template).substitute(config.variables)
-            print(replaced)
+        #for config in self.configs:
+        config = self.configs[0]
+        print(config.template)
+        template = open(config.template).read()
+        print(template)
+        replaced = BakerTemplate(template).substitute(config.variables)
+        print(replaced)
 
 
 def replace():
