@@ -1,6 +1,5 @@
 import re
 
-from functools import reduce
 from string import Template
 from configparser import ConfigParser
 
@@ -20,26 +19,37 @@ class ReadConfig:
         #     self.dict_from_yaml()
         else:
             raise FileExistsError('Unsupported file format.')
-        print(self.configs)
 
     def dict_from_ini(self):
         parser = ConfigParser()
+
         if CONFIG_CASE_SENSITIVE:
             parser.optionxform = str
+
         parser.read(self.config_file, encoding='utf-8')
 
         if parser.sections():
-            templates = set(map(lambda x: ':'.join(x.split(':')[:-1]), parser.sections()))
-            for label in templates:
-                template = dict(parser.items(label + ':template'))
-                print(template)
-                template['name'] = label
-                config = Config(template,
-                                variables=dict(parser.items(label + ':variables')),
-                                secrets=dict(parser.items(label + ':secrets')))
-                self.configs.append(config)
+            templates = set(map(lambda x: x.rsplit(':', 1)[0], parser.sections()))
+            for name in templates:
+                variables = self._get_values(parser, name + ':variables')
+                secrets = self._get_values(parser, name + ':secrets')
+                template = self._get_values(parser, name + ':template')
+
+                if template:
+                    template['name'] = name
+                else:
+                    raise AttributeError('Attribute template is required.')
+
+                self.configs.append(Config(template, variables, secrets))
         else:
             raise FileExistsError('Unable to read configs from file.')
+
+    @staticmethod
+    def _get_values(parser, section):
+        values = None
+        if parser.has_section(section):
+            values = dict(parser.items(section))
+        return values
 
 
 class Config:
@@ -47,7 +57,6 @@ class Config:
         self._template(template)
         self.variables = variables
         self._secrets(secrets)
-        print(template, variables, secrets)
 
     def _secrets(self, secrets):
         if secrets:
@@ -62,8 +71,33 @@ class Config:
     def _template(self, template):
         for var, value in template.items():
             if var not in ['template', 'path', 'name', 'user', 'group', 'mode']:
-                raise FileExistsError("Unsupported option '" + var + "'in config file.")
+                raise AttributeError("Unsupported attribute '" + var + "'in config file.")
             self.__setattr__(var, value)
+
+
+class BakerTemplate(Template):
+    delimiter = '{{ '
+    pattern = r'''
+        \{\{ (?:
+           (?P<escaped>\\)                | # Expression [-- will become [-
+           (?P<named>[_a-z][_a-z0-9]*) \}\} | # -, [, ], and \n can't be used in names
+           \b\B(?P<braced>)              | # Braced names disabled
+           (?P<invalid>)                 | #
+        )
+    '''
+
+
+class ReplaceTemplate:
+    def __init__(self, configs):
+        print(configs[0].variables)
+        self.configs = configs
+
+    def replace(self):
+        for config in self.configs:
+            template = open(config.template).read()
+            print(template)
+            replaced = BakerTemplate(template).substitute(config.variables)
+            print(replaced)
 
 
 def replace():
