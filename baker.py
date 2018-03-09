@@ -4,7 +4,7 @@ import argparse
 
 if __name__ == '__main__':
     try:
-        from baker.secret import SecretKey
+        from baker.secret import SecretKey, Encryption
         from baker.parser import ReadConfig, ReplaceTemplate
     except ImportError:
         # The above import may fail for some other reason. Ensure that the
@@ -24,7 +24,7 @@ if __name__ == '__main__':
                                      description='Baker  <:::> .')
 
     parser.add_argument('command', type=str, nargs='?', default=None,
-                        help='Commands: genkey or configure',)
+                        help='Commands: genkey, encrypt or configure',)
 
     parser.add_argument('option', type=str, nargs='?', default=None,
                         help='Options for a command', )
@@ -40,6 +40,13 @@ if __name__ == '__main__':
             exit(1)
         SecretKey.generate(args.option)  # 'my secret key ninja_+='
         print(' Secret key created')
+    elif args.command == 'encrypt':
+        if not args.option:
+            print('Error: Value to encrypt required to configure the system.')
+            exit(1)
+        secret_key = str(SecretKey().key)
+        enc = Encryption(secret_key)
+        print(enc.encrypt(args.option))
     elif args.command == 'configure':
         if not args.option:
             print('Error: Config file is required to configure the system.')
