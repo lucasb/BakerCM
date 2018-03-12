@@ -1,19 +1,19 @@
 from string import Template
 from configparser import ConfigParser
 
-from baker.settings import CONFIG_CASE_SENSITIVE
+from baker.settings import CONFIG_CASE_SENSITIVE, DEBUG
 from baker.secret import Encryption, SecretKey
 
 
 class ReadConfig:
     def __init__(self, file):
-        self.configs = []
+        self.configs = []  # FIXME: Add safe code to get the order of configs are the same of file
         self.config_file = file
         filename = file.lower()
 
         if filename.endswith('.cfg'):
             self.dict_from_ini()
-        # elif filename.endswith('.yml'): # TODO: Add support to configurate via yaml file
+        # elif filename.endswith('.yml'): # TODO: Add support to configure via yaml file
         #     self.dict_from_yaml()
         else:
             raise FileExistsError('Unsupported file format.')
@@ -34,7 +34,7 @@ class ReadConfig:
                 template = self._get_values(parser, name + ':template')
 
                 if template:
-                    template['name'] = name  # FIXME: Check with name is note enable
+                    template['name'] = name
                 else:
                     raise AttributeError('Attribute template is required.')
 
@@ -69,7 +69,7 @@ class Config:
     def _template(self, template):
         for var, value in template.items():
             if var not in ['template', 'path', 'name', 'user', 'group', 'mode']:
-                raise AttributeError("Unsupported attribute '" + var + "'in config file.")
+                raise AttributeError("Unsupported attribute '%s'in config file." % var)
             self.__setattr__(var, value)
 
 
@@ -93,7 +93,7 @@ class ReplaceTemplate:
 
     def replace(self):
         # FIXME: Support ignore care replace
-        for config in self.configs:
+        for idx, config in enumerate(self.configs):
             template_file = open(config.template).read()
             template = BakerTemplate(template_file)
             replaced = template.substitute(config.variables)
@@ -101,6 +101,12 @@ class ReplaceTemplate:
 
             if hasattr(config, 'path'):
                 target = config.path
-            if target.endswith('.tpl'):
-                target = target[:-4]
+            if target.endswith('.tpl'):  # TODO: Add support to choose template extension
+                target = target[:-4]  # TODO: Add support to choose remove template ext or not
             open(target, 'w').write(replaced)
+
+            if DEBUG:  # TODO: Move for a file that care about feedback with cli
+                print('\t ', config.name, config.template)
+                print('\t\t ', target)
+            else:
+                print('  ' + '.' * (idx + 1), end='\r')

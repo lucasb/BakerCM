@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print(' Baker  <:::> ')
+    print(' Baker  <:::> \n')
 
     if args.command == 'genkey':
         print(' Generating secret key .............')
@@ -41,6 +41,7 @@ if __name__ == '__main__':
         SecretKey.generate(args.option)  # 'my secret key ninja_+='
         print(' Secret key created')
     elif args.command == 'encrypt':
+        print(' Encrypting secret key .............')
         if not args.option:
             print('Error: Value to encrypt required to configure the system.')
             exit(1)
@@ -48,15 +49,15 @@ if __name__ == '__main__':
         enc = Encryption(secret_key)
         print(enc.encrypt(args.option))
     elif args.command == 'configure':
+        print(' Configure templates ')
         if not args.option:
             print('Error: Config file is required to configure the system.')
             exit(1)
         config = ReadConfig(args.option)
         parser = ReplaceTemplate(config.configs)
         parser.replace()
-        print(' Finished configuration')
     else:
         print('Error: Command not found, try -h.')
         exit(1)
 
-    print('\n All done with success!  \o/')
+    print('\n\n All done with success!  \o/')

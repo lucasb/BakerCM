@@ -11,7 +11,7 @@ class SecretKey:
         """
         Generate secret key from key pass
         """
-        b_key_pass = key_pass.encode('utf-8')
+        b_key_pass = key_pass.encode('utf-8')  # TODO: Add support for other encode types
         sha256 = SHA256.new(b_key_pass)
         secret_key = sha256.digest()
         secret_store = binascii.hexlify(secret_key).decode('utf-8')
@@ -27,8 +27,9 @@ class SecretKey:
             return open(STORAGE_KEY_PATH).read()
         except FileNotFoundError:
             raise FileNotFoundError(
-                "Secret key not found at: '" + STORAGE_KEY_PATH + "'. "
+                "Secret key not found at: '%s'. "
                 "Are you sure it was generated and available on this path?"
+                % STORAGE_KEY_PATH
             )
 
 
@@ -42,7 +43,7 @@ class Encryption:
 
     def encrypt(self, raw):
         """
-        Encrypt and return an hexdecimal utf-8 format
+        Encrypt and return an hexadecimal utf-8 format
         """
         b_raw = raw.encode('utf-8')
         cipher = AES.new(self.key, AES.MODE_EAX)
@@ -51,22 +52,21 @@ class Encryption:
 
     def decrypt(self, encrypt):
         """
-        Decrypt values from a hexdecimal utf-8 format to plaintext
+        Decrypt values from a hexadecimal utf-8 format to plaintext
         """
         nonce, tag, b_cipher = self._split_encrypt(encrypt)
         cipher = AES.new(self.key, AES.MODE_EAX, nonce=nonce)
         try:
-            return cipher.decrypt_and_verify(b_cipher, tag).decode("utf-8")
+            return cipher.decrypt_and_verify(b_cipher, tag).decode('utf-8')
         except ValueError:
-            raise ValueError(
-                "ERROR: Encryption '" + encrypt + "' is corrupted."
-            )
+            raise ValueError("ERROR: Encryption '%s' is corrupted." % encrypt)
 
     def _build_encrypt(self, nonce, b_cipher, tag):
         """
         Build a unique encrypt with all sections of cipher
         """
-        return self._to_hex(nonce) + self.sep + self._to_hex(tag) + self.sep + self._to_hex(b_cipher)
+        return self._to_hex(nonce) + self.sep + self._to_hex(tag) + \
+            self.sep + self._to_hex(b_cipher)
 
     def _split_encrypt(self, encrypt):
         """
@@ -76,14 +76,12 @@ class Encryption:
             nonce, tag, cipher = encrypt.split(self.sep)
             return self._to_bin(nonce), self._to_bin(tag), self._to_bin(cipher)
         except ValueError:
-            raise ValueError(
-                "ERROR: Encryption '" + encrypt + "' is corrupted."
-            )
+            raise ValueError("ERROR: Encryption '%s' is corrupted." % encrypt)
 
     @staticmethod
     def _to_hex(binary):
         """
-        Convert binary string into hexdecimal decoded in utf8
+        Convert binary string into hexadecimal decoded in utf8
         """
         return binascii.hexlify(binary).decode('utf-8')
 
