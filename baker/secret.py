@@ -2,7 +2,7 @@ import binascii
 
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
-from baker.settings import STORAGE_KEY_PATH
+from baker.settings import STORAGE_KEY_PATH, ENCODING
 
 
 class SecretKey:
@@ -11,10 +11,10 @@ class SecretKey:
         """
         Generate secret key from key pass
         """
-        b_key_pass = key_pass.encode('utf-8')  # TODO: Add support for other encode types
+        b_key_pass = key_pass.encode(ENCODING)
         sha256 = SHA256.new(b_key_pass)
         secret_key = sha256.digest()
-        secret_store = binascii.hexlify(secret_key).decode('utf-8')
+        secret_store = binascii.hexlify(secret_key).decode(ENCODING)
         open(STORAGE_KEY_PATH, 'w').write(secret_store)
         return secret_store
 
@@ -36,28 +36,28 @@ class SecretKey:
 class Encryption:
     def __init__(self, secret_key):
         """
-        Initialize with a security key in hexadecimal utf-8 format
+        Initialize with a security key in hexadecimal utf-8 as default format
         """
         self.key = binascii.unhexlify(secret_key)
         self.sep = '\\'
 
     def encrypt(self, raw):
         """
-        Encrypt and return an hexadecimal utf-8 format
+        Encrypt and return an hexadecimal utf-8 as default format
         """
-        b_raw = raw.encode('utf-8')
+        b_raw = raw.encode(ENCODING)
         cipher = AES.new(self.key, AES.MODE_EAX)
         b_cipher, tag = cipher.encrypt_and_digest(b_raw)
         return self._build_encrypt(cipher.nonce, b_cipher, tag)
 
     def decrypt(self, encrypt):
         """
-        Decrypt values from a hexadecimal utf-8 format to plaintext
+        Decrypt values from a hexadecimal utf-8 as default format to plaintext
         """
         nonce, tag, b_cipher = self._split_encrypt(encrypt)
         cipher = AES.new(self.key, AES.MODE_EAX, nonce=nonce)
         try:
-            return cipher.decrypt_and_verify(b_cipher, tag).decode('utf-8')
+            return cipher.decrypt_and_verify(b_cipher, tag).decode(ENCODING)
         except ValueError:
             raise ValueError("ERROR: Encryption '%s' is corrupted." % encrypt)
 
@@ -81,13 +81,13 @@ class Encryption:
     @staticmethod
     def _to_hex(binary):
         """
-        Convert binary string into hexadecimal decoded in utf8
+        Convert binary string into hexadecimal decoded in utf-8 as default
         """
-        return binascii.hexlify(binary).decode('utf-8')
+        return binascii.hexlify(binary).decode(ENCODING)
 
     @staticmethod
     def _to_bin(hexadecimal):
         """
-        Convert hexadecimal string encoded in utf-8 into binary
+        Convert hexadecimal string encoded in utf-8 as default into binary
         """
-        return binascii.unhexlify(hexadecimal.encode('utf-8'))
+        return binascii.unhexlify(hexadecimal.encode(ENCODING))

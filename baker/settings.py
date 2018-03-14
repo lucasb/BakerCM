@@ -13,3 +13,6 @@ CONFIG_CASE_SENSITIVE = True
 # DEBUG mode is False as default, it can be change in config file.
 # Using option --verbose in command line DEBUG change to true.
 DEBUG = False
+
+# Encode of files and secrets
+ENCODING = 'utf-8'
