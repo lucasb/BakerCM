@@ -16,3 +16,6 @@ DEBUG = False
 
 # Encode of files and secrets
 ENCODING = 'utf-8'
+
+# Extension for template files. Set 'None' to disable replacement of template name.
+TEMPLATE_EXT = 'tpl'

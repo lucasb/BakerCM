@@ -1,21 +1,23 @@
 import argparse
+
 from baker.secret import SecretKey, Encryption
-from baker.parser import ReadConfig, ReplaceTemplate
-from baker import settings
+from baker.configuration import ReadConfig
+from baker.template import ReplaceTemplate
+from baker.settings import DEBUG, STORAGE_KEY_PATH
 
 
-argparser = argparse.ArgumentParser(prog='baker.py', description='Baker  <:::> .')
+parser = argparse.ArgumentParser(prog='baker.py', description='Baker  <:::> .')
 
-argparser.add_argument('command', type=str, help='Commands: genkey, encrypt or configure',)
-argparser.add_argument('option', type=str, help='Options for a command', )
-argparser.add_argument('--verbose', action="store_true", help='increase output verbosity', )
+parser.add_argument('command', type=str, help='Commands: genkey, encrypt or configure', )
+parser.add_argument('option', type=str, help='Options for a command', )
+parser.add_argument('--verbose', action="store_true", help='increase output verbosity', )
 
-args = argparser.parse_args()
+args = parser.parse_args()
 
 print(' Baker  <:::> \n')
 
 if args.verbose:
-    settings.DEBUG = True
+    DEBUG = True
 
 if args.command == 'genkey':
     print(' Generating secret key .............')
@@ -23,8 +25,8 @@ if args.command == 'genkey':
         print('Error: Key pass is required to generate a secret key.')
         exit(1)
     secret_key = SecretKey.generate(args.option)  # 'my secret key ninja_+='
-    if settings.DEBUG:
-        print(" Secret key '%s' created at %s" % (secret_key, settings.STORAGE_KEY_PATH))
+    if DEBUG:
+        print(" Secret key '%s' created at %s" % (secret_key, STORAGE_KEY_PATH))
     else:
         print(' Secret key created')
 elif args.command == 'encrypt':
@@ -41,12 +43,12 @@ elif args.command == 'configure':
         print('Error: Config file is required to configure the system.')
         exit(1)
     config = ReadConfig(args.option)
-    parser = ReplaceTemplate(config.configs)
-    parser.replace()
+    template = ReplaceTemplate(config.configs)
+    template.replace()
 
 print('\n\n All done with success!  \o/')
 
 
 def execute_command_line(argv):
     del argv[0]
-    argparser.parse_args(argv)
+    parser.parse_args(argv)

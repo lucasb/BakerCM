@@ -1,13 +1,13 @@
-from string import Template
 from configparser import ConfigParser
+from collections import OrderedDict
 
-from baker.settings import CONFIG_CASE_SENSITIVE, DEBUG
+from baker.settings import CONFIG_CASE_SENSITIVE
 from baker.secret import Encryption, SecretKey
 
 
 class ReadConfig:
     def __init__(self, file):
-        self.configs = []  # FIXME: Add safe code to get the order of configs are the same of file
+        self.configs = []
         self.config_file = file
         filename = file.lower()
 
@@ -27,7 +27,9 @@ class ReadConfig:
         parser.read(self.config_file, encoding='utf-8')
 
         if parser.sections():
-            templates = set(map(lambda x: x.rsplit(':', 1)[0], parser.sections()))
+            sections = map(lambda x: x.rsplit(':', 1)[0], parser.sections())
+            templates = OrderedDict.fromkeys(sections)
+
             for name in templates:
                 variables = self._get_values(parser, name + ':variables')
                 secrets = self._get_values(parser, name + ':secrets')
@@ -71,42 +73,3 @@ class Config:
             if var not in ['template', 'path', 'name', 'user', 'group', 'mode']:
                 raise AttributeError("Unsupported attribute '%s'in config file." % var)
             self.__setattr__(var, value)
-
-
-class BakerTemplate(Template):
-    delimiter = '{{'
-    pattern = r'''
-        \{\{\ *(?:
-        (?P<escaped>{)                    | # escape with {{{escape}}} or {{{ escape }}} 
-        (?P<named>[_a-z][_a-z0-9]*)\ *}}  | # identifier {{var}} or {{ var }}
-        \b\B(?P<braced>)                  | # braced identifier disabled
-        (?P<invalid>)                       # ill-formed delimiter expr
-        )
-    '''
-    # FIXME: Replace escape regex to work with braces in the ends too
-
-
-# TODO: Add support for permission using user, group, mode config attr
-class ReplaceTemplate:
-    def __init__(self, configs):
-        self.configs = configs
-
-    def replace(self):
-        # FIXME: Support ignore care replace
-        for idx, config in enumerate(self.configs):
-            template_file = open(config.template).read()
-            template = BakerTemplate(template_file)
-            replaced = template.substitute(config.variables)
-            target = config.template
-
-            if hasattr(config, 'path'):
-                target = config.path
-            if target.endswith('.tpl'):  # TODO: Add support to choose template extension
-                target = target[:-4]  # TODO: Add support to choose remove template ext or not
-            open(target, 'w').write(replaced)
-
-            if DEBUG:  # TODO: Move for a file that care about feedback with cli
-                print('\t ', config.name, config.template)
-                print('\t\t ', target)
-            else:
-                print('  ' + '.' * (idx + 1), end='\r')
