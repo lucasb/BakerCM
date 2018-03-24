@@ -1,7 +1,9 @@
-import os, shutil
+import os
+import shutil
+
 from string import Template
 
-from baker.settings import TEMPLATE_EXT, DEBUG
+from baker.settings import TEMPLATE_EXT, CONFIG_CASE_SENSITIVE, DEBUG
 
 
 class ReplaceTemplate:
@@ -9,11 +11,11 @@ class ReplaceTemplate:
         self.configs = configs
 
     def replace(self):
-        # FIXME: Support ignore case replace
         for idx, config in enumerate(self.configs):
             template_file = open(config.template).read()
             template = BakerTemplate(template_file)
-            replaced = template.substitute(config.variables)
+            if config.variables:
+                replaced = template.replace(config.variables)
             target = config.template
 
             if hasattr(config, 'path'):
@@ -27,7 +29,7 @@ class ReplaceTemplate:
 
             self._add_file_permission(config, target)
 
-            if DEBUG:  # TODO: Move for a file that care about feedback with cli
+            if DEBUG:  # TODO: Move for a file that care about feedback wipipth cli
                 print('\t ', config.name, config.template)
                 print('\t\t ', target)
             else:
@@ -54,3 +56,24 @@ class BakerTemplate(Template):
         )
     '''
     # FIXME: Replace escape regex to work with braces in the ends too
+
+    def replace(self, mapping):
+        if CONFIG_CASE_SENSITIVE:
+            return super(BakerTemplate, self).substitute(mapping)
+        else:
+            return self.ignore_case_substitute(mapping)
+
+    def ignore_case_substitute(self, mapping):
+        if not mapping:
+            raise TypeError("descriptor 'substitute' of 'Template' object needs an argument")
+
+        def convert(mo):
+            named = mo.group('named')
+            if named is not None:
+                return str(mapping[named.lower()])
+            if mo.group('escaped') is not None:
+                return self.delimiter
+            if mo.group('invalid') is not None:
+                self._invalid(mo)
+            raise ValueError('Unrecognized named group in pattern', self.pattern)
+        return self.pattern.sub(convert, self.template)

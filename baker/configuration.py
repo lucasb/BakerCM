@@ -64,12 +64,12 @@ class Config:
                 self.variables = {}
             secret_key = SecretKey()
             encryption = Encryption(secret_key.key)
-            for var, secret in secrets.items():
+            for idx, secret in secrets.items():
                 decrypted_value = encryption.decrypt(secret)
-                self.variables[var] = decrypted_value
+                self.variables[idx] = decrypted_value
 
     def _template(self, template):
-        for var, value in template.items():
-            if var not in ['template', 'path', 'name', 'user', 'group', 'mode']:
-                raise AttributeError("Unsupported attribute '%s'in config file." % var)
-            self.__setattr__(var, value)
+        for attr, value in template.items():
+            if attr not in ['template', 'path', 'name', 'user', 'group', 'mode']:
+                raise AttributeError("Unsupported attribute '%s'in config file." % attr)
+            self.__setattr__(attr, value)
