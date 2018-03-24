@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 from collections import OrderedDict
 
-from baker.settings import CONFIG_CASE_SENSITIVE
+from baker.settings import CONFIG_CASE_SENSITIVE, ENCODING
 from baker.secret import Encryption, SecretKey
 
 
@@ -24,7 +24,7 @@ class ReadConfig:
         if CONFIG_CASE_SENSITIVE:
             parser.optionxform = str
 
-        parser.read(self.config_file, encoding='utf-8')
+        parser.read(self.config_file, encoding=ENCODING)
 
         if parser.sections():
             sections = map(lambda x: x.rsplit(':', 1)[0], parser.sections())
