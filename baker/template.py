@@ -5,7 +5,6 @@ from string import Template
 
 from baker.settings import TEMPLATE_EXT, CONFIG_CASE_SENSITIVE, DEBUG
 
-
 class ReplaceTemplate:
     def __init__(self, configs):
         self.configs = configs
@@ -14,8 +13,7 @@ class ReplaceTemplate:
         for idx, config in enumerate(self.configs):
             template_file = open(config.template).read()
             template = BakerTemplate(template_file)
-            if config.variables:
-                replaced = template.replace(config.variables)
+            replaced = template.replace(config.variables) if config.variables else None
             target = config.template
 
             if hasattr(config, 'path'):
@@ -49,13 +47,12 @@ class BakerTemplate(Template):
     delimiter = '{{'
     pattern = r'''
         \{\{\ *(?:
-        (?P<escaped>{)                    | # escape with {{{escape}}} or {{{ escape }}} 
-        (?P<named>[_a-z][_a-z0-9]*)\ *}}  | # identifier {{var}} or {{ var }}
-        \b\B(?P<braced>)                  | # braced identifier disabled
-        (?P<invalid>)                       # ill-formed delimiter expr
+        (?P<escaped>\\)                     | # escape with {{\escape}} or {{\ escape }}} 
+        (?P<named>[_a-z][_a-z0-9]*)\ *}}    | # identifier {{var}} or {{ var }}
+        \b\B(?P<braced>)                    | # braced identifier disabled
+        (?P<invalid>)                         # ill-formed delimiter expr
         )
     '''
-    # FIXME: Replace escape regex to work with braces in the ends too
 
     def replace(self, mapping):
         if CONFIG_CASE_SENSITIVE:

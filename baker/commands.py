@@ -45,6 +45,9 @@ elif args.command == 'configure':
     config = ReadConfig(args.option)
     template = ReplaceTemplate(config.configs)
     template.replace()
+else:
+    print("Error: Command '%s' not found." % args.command)
+    exit(1)
 
 print('\n\n All done with success!  \o/')
 

@@ -4,4 +4,4 @@ database:
  port: '{{ PORT }}'
  user: '{{ USER }}'
  password: '{{ PASSWORD }}'
- escape-conn: '{{{connection}}}'
+ escape-conn: '{{\ connection }}'
