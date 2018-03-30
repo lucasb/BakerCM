@@ -5,6 +5,7 @@ from string import Template
 
 from baker.settings import TEMPLATE_EXT, CONFIG_CASE_SENSITIVE, DEBUG
 
+
 class ReplaceTemplate:
     def __init__(self, configs):
         self.configs = configs
@@ -13,7 +14,7 @@ class ReplaceTemplate:
         for idx, config in enumerate(self.configs):
             template_file = open(config.template).read()
             template = BakerTemplate(template_file)
-            replaced = template.replace(config.variables) if config.variables else None
+            replaced = template.replace(config.variables) if config.variables else template_file
             target = config.template
 
             if hasattr(config, 'path'):
@@ -27,7 +28,7 @@ class ReplaceTemplate:
 
             self._add_file_permission(config, target)
 
-            if DEBUG:  # TODO: Move for a file that care about feedback wipipth cli
+            if DEBUG:  # TODO: Move for a file that care about feedback with cli
                 print('\t ', config.name, config.template)
                 print('\t\t ', target)
             else:
