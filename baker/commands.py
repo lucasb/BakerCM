@@ -3,7 +3,7 @@ import argparse
 from baker.secret import SecretKey, Encryption
 from baker.configuration import ReadConfig
 from baker.template import ReplaceTemplate
-from baker.settings import DEBUG, STORAGE_KEY_PATH
+from baker import settings
 
 
 parser = argparse.ArgumentParser(prog='baker.py', description='Baker  <:::> .')
@@ -17,7 +17,9 @@ args = parser.parse_args()
 print(' Baker  <:::> \n')
 
 if args.verbose:
-    DEBUG = True
+    settings.load(DEBUG=True)
+else:
+    settings.load()
 
 if args.command == 'genkey':
     print(' Generating secret key .............')
@@ -25,8 +27,8 @@ if args.command == 'genkey':
         print('Error: Key pass is required to generate a secret key.')
         exit(1)
     secret_key = SecretKey.generate(args.option)  # 'my secret key ninja_+='
-    if DEBUG:
-        print(" Secret key '%s' created at %s" % (secret_key, STORAGE_KEY_PATH))
+    if settings.get('DEBUG'):
+        print(" Secret key '%s' created at %s" % (secret_key, settings.get('STORAGE_KEY_PATH')))
     else:
         print(' Secret key created')
 elif args.command == 'encrypt':

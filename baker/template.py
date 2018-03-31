@@ -3,7 +3,7 @@ import shutil
 
 from string import Template
 
-from baker.settings import TEMPLATE_EXT, CONFIG_CASE_SENSITIVE, DEBUG
+from baker import settings
 
 
 class ReplaceTemplate:
@@ -20,15 +20,15 @@ class ReplaceTemplate:
             if hasattr(config, 'path'):
                 target = config.path
 
-            if TEMPLATE_EXT and target.endswith(TEMPLATE_EXT):
-                ext_size = len(TEMPLATE_EXT) + 1
+            if settings.get('TEMPLATE_EXT') and target.endswith(settings.get('TEMPLATE_EXT')):
+                ext_size = len(settings.get('TEMPLATE_EXT')) + 1
                 target = target[:-ext_size]
 
             open(target, 'w').write(replaced)
 
             self._add_file_permission(config, target)
 
-            if DEBUG:  # TODO: Move for a file that care about feedback with cli
+            if settings.get('DEBUG'):  # TODO: Move for a file that care about feedback with cli
                 print('\t ', config.name, config.template)
                 print('\t\t ', target)
             else:
@@ -56,14 +56,17 @@ class BakerTemplate(Template):
     '''
 
     def replace(self, mapping):
-        if CONFIG_CASE_SENSITIVE:
+        if settings.get('CONFIG_CASE_SENSITIVE'):
             return super(BakerTemplate, self).substitute(mapping)
         else:
             return self.ignore_case_substitute(mapping)
 
     def ignore_case_substitute(self, mapping):
         if not mapping:
-            raise TypeError("descriptor 'substitute' of 'Template' object needs an argument")
+            raise TypeError(
+                "Descriptor 'ignore_case_substitute' of 'BakerTemplate' "
+                "object needs an argument."
+            )
 
         def convert(mo):
             named = mo.group('named')
