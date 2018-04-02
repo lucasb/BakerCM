@@ -1,5 +1,6 @@
-from pathlib import Path
 from configparser import ConfigParser
+from itertools import chain
+from pathlib import Path
 
 
 def _init():
@@ -26,18 +27,27 @@ def _init():
 def load(**kwargs):
     rc_file_path = str(Path.home()) + '/.bakerc'
 
+    def convert_if_bool(string):
+        lower_str = string.lower()
+        if lower_str in ('true', 'false'):
+            return True if lower_str == 'true' else False
+        return string
+
     _init()
 
-    if Path(rc_file_path).is_file():  # TODO: add check for config for each value below
-        configs = ConfigParser()
-        configs.read(rc_file_path, encoding=ENCODING)
+    if Path(rc_file_path).is_file():
+        parser = ConfigParser()
+        with open(rc_file_path) as lines:
+            lines = chain(("[DEFAULT]",), lines)
+            parser.read_file(lines)
 
-        for key, value in configs.items():
+        for key, value in parser.defaults().items():
             upper_key = key.upper()
+
             if upper_key not in globals():
-                raise AttributeError("Setting '%s' in '%s' is not supported."
-                                     % upper_key, rc_file_path)
-            globals()[upper_key] = value
+                raise AttributeError("Setting '{0}' in '{1}' is not supported.".format(
+                                     upper_key, rc_file_path))
+            globals()[upper_key] = convert_if_bool(value)
 
     for key, value in kwargs.items():
         globals()[key] = value
