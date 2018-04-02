@@ -12,7 +12,7 @@ class ReplaceTemplate:
 
     def replace(self):
         for idx, config in enumerate(self.configs):
-            template_file = open(config.template).read()
+            template_file = self._file(config.template)
             template = BakerTemplate(template_file)
             replaced = template.replace(config.variables) if config.variables else template_file
             target = config.template
@@ -23,8 +23,7 @@ class ReplaceTemplate:
             if settings.get('TEMPLATE_EXT') and target.endswith(settings.get('TEMPLATE_EXT')):
                 ext_size = len(settings.get('TEMPLATE_EXT')) + 1
                 target = target[:-ext_size]
-
-            open(target, 'w').write(replaced)
+                self._file(target, mode='w', content=replaced)
 
             self._add_file_permission(config, target)
 
@@ -33,6 +32,17 @@ class ReplaceTemplate:
                 print('\t\t ', target)
             else:
                 print('  ' + '.' * (idx + 1), end='\r')
+
+    @staticmethod
+    def _file(path, mode='r', content=None):
+        file = open(path, mode)
+        try:
+            if mode == 'r':
+                return file.read()
+            elif content:
+                return file.write(content)
+        finally:
+            file.close()
 
     @staticmethod
     def _add_file_permission(config, path):

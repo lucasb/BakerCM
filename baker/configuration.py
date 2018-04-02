@@ -27,20 +27,24 @@ class ReadConfig:
         parser.read(self.config_file, encoding=settings.get('ENCODING'))
 
         if parser.sections():
-            sections = map(lambda x: x.rsplit(':', 1)[0], parser.sections())
-            templates = OrderedDict.fromkeys(sections)
+            curr_template = None
 
-            for name in templates:
-                variables = self._get_values(parser, name + ':variables')
-                secrets = self._get_values(parser, name + ':secrets')
-                template = self._get_values(parser, name + ':template')
+            for section in parser.sections():
+                name = section.rsplit(':', 1)[0]
 
-                if template:
-                    template['name'] = name
-                else:
-                    raise AttributeError('Attribute template is required.')
+                if name != curr_template:
+                    curr_template = name
 
-                self.configs.append(Config(template, variables, secrets))
+                    variables = self._get_values(parser, name + ':variables')
+                    secrets = self._get_values(parser, name + ':secrets')
+                    template = self._get_values(parser, name + ':template')
+
+                    if template:
+                        template['name'] = name
+                    else:
+                        raise AttributeError('Attribute template is required.')
+
+                    self.configs.append(Config(template, variables, secrets))
         else:
             raise FileExistsError('Unable to read configs from file.')
 
