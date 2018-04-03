@@ -23,8 +23,8 @@ class ReplaceTemplate:
             if settings.get('TEMPLATE_EXT') and target.endswith(settings.get('TEMPLATE_EXT')):
                 ext_size = len(settings.get('TEMPLATE_EXT')) + 1
                 target = target[:-ext_size]
-                self._file(target, mode='w', content=replaced)
 
+            self._file(target, mode='w', content=replaced)
             self._add_file_permission(config, target)
 
             if settings.get('DEBUG'):  # TODO: Move for a file that care about feedback with cli
