@@ -4,6 +4,7 @@ import shutil
 from string import Template
 
 from baker import settings
+from baker import cli
 
 
 class ReplaceTemplate:
@@ -11,7 +12,7 @@ class ReplaceTemplate:
         self.configs = configs
 
     def replace(self):
-        for idx, config in enumerate(self.configs):
+        for config in self.configs:
             template_file = self._file(config.template)
             template = BakerTemplate(template_file)
             replaced = template.replace(config.variables) if config.variables else template_file
@@ -26,12 +27,7 @@ class ReplaceTemplate:
 
             self._file(target, mode='w', content=replaced)
             self._add_file_permission(config, target)
-
-            if settings.get('DEBUG'):  # TODO: Move for a file that care about feedback with cli
-                print('\t ', config.name, config.template)
-                print('\t\t ', target)
-            else:
-                print('  ' + '.' * (idx + 1), end='\r')
+            cli.log(config.name, config.template, target)
 
     @staticmethod
     def _file(path, mode='r', content=None):
