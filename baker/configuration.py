@@ -1,5 +1,4 @@
 from configparser import ConfigParser
-from collections import OrderedDict
 
 from baker import settings
 from baker.secret import Encryption, SecretKey
