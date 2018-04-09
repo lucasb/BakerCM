@@ -3,6 +3,7 @@ import binascii
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 
+from baker import logger
 from baker import settings
 
 
@@ -17,6 +18,8 @@ class SecretKey:
         secret_key = sha256.digest()
         secret_store = binascii.hexlify(secret_key).decode(settings.get('ENCODING'))
         open(settings.get('STORAGE_KEY_PATH'), 'w').write(secret_store)
+        logger.log("Generated secret key '{0}' "
+                   "and saved at '{1}'".format(secret_store, settings.get('STORAGE_KEY_PATH')))
         return secret_store
 
     @property

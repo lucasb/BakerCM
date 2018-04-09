@@ -3,7 +3,7 @@ import sys
 
 if __name__ == '__main__':
     try:
-        from baker.cli import execute_command_line
+        from baker.commands import execute_command_line
     except ImportError:
         # The above import may fail for some other reason. Ensure that the
         # issue is really that Baker is missing to avoid masking other exceptions.

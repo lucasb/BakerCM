@@ -4,7 +4,7 @@ import shutil
 from string import Template
 
 from baker import settings
-from baker import cli
+from baker import logger
 
 
 class ReplaceTemplate:
@@ -27,7 +27,7 @@ class ReplaceTemplate:
 
             self._file(target, mode='w', content=replaced)
             self._add_file_permission(config, target)
-            cli.log(config.name, config.template, target)
+            logger.log(config.name, config.template, target)
 
     @staticmethod
     def _file(path, mode='r', content=None):
@@ -62,10 +62,13 @@ class BakerTemplate(Template):
     '''
 
     def replace(self, mapping):
-        if settings.get('CONFIG_CASE_SENSITIVE'):
-            return super(BakerTemplate, self).substitute(mapping)
-        else:
-            return self.ignore_case_substitute(mapping)
+        try:
+            if settings.get('CONFIG_CASE_SENSITIVE'):
+                return super(BakerTemplate, self).substitute(mapping)
+            else:
+                return self.ignore_case_substitute(mapping)
+        except KeyError as e:
+            raise KeyError('Missing variable %s' % e)
 
     def ignore_case_substitute(self, mapping):
         if not mapping:
