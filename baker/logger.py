@@ -6,17 +6,13 @@ from baker import settings
 def init():
     global LOGGER
     LOGGER = logging.getLogger()
-
     level = 'INFO'
-    fmt_str = '%(message)s'
 
     if settings.get('DEBUG'):
         level = 'DEBUG'
-        fmt_str = '%(levelname)s - ' + fmt_str
 
     handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter(fmt_str))
-
+    handler.setFormatter(logging.Formatter('%(message)s'))
     LOGGER.addHandler(handler)
     LOGGER.setLevel(level)
 
@@ -26,4 +22,4 @@ def log(*args):
 
 
 def debug(*args):
-    globals()['LOGGER'].debug(' '.join(args))
+    globals()['LOGGER'].debug('DEBUG: ' + (' '.join(args)))
