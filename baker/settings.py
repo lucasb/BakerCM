@@ -48,7 +48,7 @@ def load(**kwargs):
 
             if upper_key not in values():
                 raise AttributeError(
-                    "Setting '{0}' in '{1}' is not supported.".format(upper_key, rc_file_path)
+                    "Setting '{0}' at '{1}' is not supported.".format(upper_key, rc_file_path)
                 )
 
             values()[upper_key] = convert_if_bool(value)

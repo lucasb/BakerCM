@@ -52,8 +52,8 @@ class ConfigParser:
     def update_secrets(self):
         for config in self.configs:
             if config.secrets:
+                section = config.name + ':secrets'
                 for idx, secret in config.secrets.items():
-                    section = config.name + ':secrets'
                     self.parser[section][idx] = secret
 
         with open(self.config_file, 'w') as configfile:
