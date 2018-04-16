@@ -17,6 +17,9 @@ _default_values = {
     # Encode of files and secrets
     'ENCODING': 'utf-8',
 
+    # Absolute path to store files when downloaded via baker
+    'STORAGE_FILES': _HOME_PATH + '/.baker/',
+
     # Absolute path to store baker key to use secret values
     'STORAGE_KEY_PATH': _HOME_PATH + '/.baker.key',
 

@@ -5,6 +5,7 @@ from string import Template
 
 from baker import settings
 from baker import logger
+from baker.repository import download, is_url
 
 
 class ReplaceTemplate:
@@ -31,14 +32,20 @@ class ReplaceTemplate:
 
     @staticmethod
     def _file(path, mode='r', content=None):
-        file = open(path, mode)
+        if is_url(path):
+            path = download(path)
+
         try:
-            if mode == 'r':
-                return file.read()
-            elif content:
-                return file.write(content)
-        finally:
-            file.close()
+            with open(path, mode) as file:
+                if mode == 'r':
+                    return file.read()
+                elif content:
+                    return file.write(content)
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                "Template not found at: '%s'. Are you sure that it is available on this path?"
+                % path
+            )
 
     @staticmethod
     def _add_file_permission(config, path):

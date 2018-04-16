@@ -56,8 +56,15 @@ class ConfigParser:
                 for idx, secret in config.secrets.items():
                     self.parser[section][idx] = secret
 
-        with open(self.config_file, 'w') as configfile:
-            self.parser.write(configfile)
+        try:
+            with open(self.config_file, 'w') as configfile:
+                self.parser.write(configfile)
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                "Configuration file not found at: '%s'. "
+                "Are you sure that it is available on this path?"
+                % self.config_file
+            )
 
     @ staticmethod
     def _get_values(parser, section):
