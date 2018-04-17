@@ -5,7 +5,7 @@ from string import Template
 
 from baker import settings
 from baker import logger
-from baker.repository import download, is_url
+from baker.repository import download
 
 
 class ReplaceTemplate:
@@ -14,7 +14,8 @@ class ReplaceTemplate:
 
     def replace(self):
         for config in self.configs:
-            template_file = self._file(config.template)
+            template_path = download(config.template) if config.is_remote else config.template
+            template_file = self._file(template_path)
             template = BakerTemplate(template_file)
             replaced = template.replace(config.variables) if config.variables else template_file
             target = config.template
@@ -32,9 +33,6 @@ class ReplaceTemplate:
 
     @staticmethod
     def _file(path, mode='r', content=None):
-        if is_url(path):
-            path = download(path)
-
         try:
             with open(path, mode) as file:
                 if mode == 'r':

@@ -2,6 +2,7 @@ import configparser
 
 from baker import settings
 from baker.secret import Encryption, SecretKey
+from baker.repository import is_url
 
 
 class ConfigParser:
@@ -99,6 +100,13 @@ class Config:
             self.secrets = dict(map(lambda s: (s[0], encryption.encrypt(s[1])), items))
 
     def _template(self, template):
+        self.__setattr__('is_remote', False)
+        if is_url(template['template']):
+            self.__setattr__('is_remote', True)
+
+            if not template['path']:
+                raise AttributeError("Remove template must have attribute 'path'")
+
         for attr, value in template.items():
             if attr not in ['template', 'path', 'name', 'user', 'group', 'mode']:
                 raise AttributeError("Unsupported attribute '%s'in config file" % attr)
