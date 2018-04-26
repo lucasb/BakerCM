@@ -1,2 +1,2 @@
 # BakerCM
-Lightweight Configuration Management for Application
+BakerCM is a Decentralized Configuration Management Based on Files.

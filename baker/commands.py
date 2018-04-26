@@ -29,6 +29,10 @@ class Commands:
         SecretKey.generate(args.keypass)
 
     @staticmethod
+    def pull(args):
+        pass
+
+    @staticmethod
     def run(args):
         parser = ConfigParser(args.path)
         for config in parser.configs:

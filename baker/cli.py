@@ -23,10 +23,11 @@ class Parser:
 
     @staticmethod
     def _build_cli(commands):
-        description = 'Baker is a configuration management base on static files. <:::>'
+        description = 'Baker is a decentralized configuration management based on files. <:::>'
         parser = argparse.ArgumentParser(prog='baker', description=description)
         parser.add_argument('-v', '--version', action='version', version='%(prog)s v0.2.0')
-        subparsers = parser.add_subparsers(help='baker commands')
+        subparsers = parser.add_subparsers(title='commands', metavar='<COMMAND>',
+                                           help="Run 'baker.py COMMAND --help' for more info on a command")
 
         encrypt = subparsers.add_parser('encrypt', help='encrypt values using secret key')
         encrypt.add_argument('plantexts', nargs='*', help='Values to encrypt')
@@ -37,11 +38,15 @@ class Parser:
         genkey.add_argument('keypass', help='key pass to generate a secret key')
         genkey.set_defaults(cmd=commands.generate_key)
 
+        pull = subparsers.add_parser('pull', help='pull a recipe with configurations')
+        pull.add_argument('name', help='name [PATH:VERSION] of recipe')
+        pull.set_defaults(cmd=commands.pull)
+
         run = subparsers.add_parser('run', help='run configurations from a recipe')
         run.add_argument('path', help='path of configuration file')
         run.set_defaults(cmd=commands.run)
 
-        for _parser in [parser, encrypt, genkey, run]:
+        for _parser in [parser, encrypt, genkey, pull, run]:
             _parser.add_argument('--verbose', action="store_true", help='increase output verbosity')
 
         return parser, encrypt
