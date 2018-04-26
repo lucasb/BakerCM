@@ -36,7 +36,7 @@ def load(**kwargs):
     def convert_if_bool(string):
         lower_str = string.lower()
         if lower_str in ('true', 'false'):
-            return True if lower_str == 'true' else False
+            return lower_str == 'true'
         return string
 
     if Path(rc_file_path).is_file():
