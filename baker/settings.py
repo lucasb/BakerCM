@@ -5,6 +5,12 @@ from pathlib import Path
 
 _HOME_PATH = str(Path.home())
 
+_REPOSITORY_PATTERNS = {
+    'github': '%(repository)s/%(version)s/%(path)s',
+    'bitbucket': '%(repository)s/%(path)s?at=%(version)s',
+    'custom': '%(custom)s',
+}
+
 _default_values = {
     # This method transforms option names on every read, get, or set operation.
     # The default config keys are case insensitive. E.g. True -> for case sensitive.
@@ -16,6 +22,18 @@ _default_values = {
 
     # Encode of files and secrets
     'ENCODING': 'utf-8',
+
+    # Repository url including protocol http/https and domain until the root folder.
+    'REPOSITORY': None,
+
+    # Type of repository to use some pattern that is know like: github or bitbucket.
+    # Pattern can be customized setting it as custom and filling REPOSITORY_CUSTOM_PATTERN config.
+    'REPOSITORY_TYPE': None,
+
+    # Customization of repository access the recipes with configurations.
+    # To build pattern use variables to build url to access config in a remote repository.
+    # E.g.: '%(repository)s/%(path)s/%(version)s'
+    'REPOSITORY_CUSTOM_PATTERN': None,
 
     # Absolute path to store files when downloaded via baker
     'STORAGE_FILES': _HOME_PATH + '/.baker/',

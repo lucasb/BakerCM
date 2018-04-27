@@ -33,3 +33,18 @@ def download(url):
 
     urlretrieve(url, file_path)
     return file_path
+
+
+class Repository:
+    def __init__(self, name):
+        sep = ':'
+        if sep not in name:
+            raise AttributeError(
+                "Attr 'name' has malformed value. It must have ':' splitting path and version")
+
+        self.path, self.version = name.split(sep)
+        self.build_url()
+
+    def build_url(self):
+        repository = settings.get('REPOSITORY')
+        print(repository, self.path, self.version)

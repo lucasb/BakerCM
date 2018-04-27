@@ -4,6 +4,7 @@ from baker import logger
 from baker import settings
 from baker.cli import Parser
 from baker.configuration import ConfigParser
+from baker.repository import Repository
 from baker.secret import SecretKey, Encryption
 from baker.template import ReplaceTemplate
 
@@ -30,7 +31,7 @@ class Commands:
 
     @staticmethod
     def pull(args):
-        pass
+        Repository(args.name)
 
     @staticmethod
     def run(args):

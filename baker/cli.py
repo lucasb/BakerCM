@@ -24,10 +24,11 @@ class Parser:
     @staticmethod
     def _build_cli(commands):
         description = 'Baker is a decentralized configuration management based on files. <:::>'
+        help_commands = "Run 'baker COMMAND --help' for more info on a command"
         parser = argparse.ArgumentParser(prog='baker', description=description)
         parser.add_argument('-v', '--version', action='version', version='%(prog)s v0.2.0')
         subparsers = parser.add_subparsers(title='commands', metavar='<COMMAND>',
-                                           help="Run 'baker.py COMMAND --help' for more info on a command")
+                                           help=help_commands)
 
         encrypt = subparsers.add_parser('encrypt', help='encrypt values using secret key')
         encrypt.add_argument('plantexts', nargs='*', help='Values to encrypt')
