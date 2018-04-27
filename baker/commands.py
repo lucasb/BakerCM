@@ -1,5 +1,7 @@
 import traceback
 
+from os import path, makedirs
+
 from baker import logger
 from baker import settings
 from baker.cli import Parser
@@ -31,7 +33,7 @@ class Commands:
 
     @staticmethod
     def pull(args):
-        Repository(args.name)
+        Repository(args.name).pull()
 
     @staticmethod
     def run(args):
@@ -52,6 +54,7 @@ def execute_command_line(args):
         settings.load(DEBUG=options.verbose)
         logger.init()
         logger.log('Baker start <:::> \n')
+        _startup()
         parser.execute()
         logger.log('\n All done with success!  \o/')
     except Exception as e:
@@ -59,3 +62,9 @@ def execute_command_line(args):
         logger.log(str(e))
         parser.exit_with_error(
             'ERROR: Unexpected error was caught. Add --verbose option for more information \n')
+
+
+def _startup():
+    storage_folder = settings.get('STORAGE_TEMPLATES')
+    if not path.isdir(storage_folder):
+        makedirs(storage_folder, mode=int('0755', 8))

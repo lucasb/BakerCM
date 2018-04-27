@@ -5,12 +5,6 @@ from pathlib import Path
 
 _HOME_PATH = str(Path.home())
 
-_REPOSITORY_PATTERNS = {
-    'github': '%(repository)s/%(version)s/%(path)s',
-    'bitbucket': '%(repository)s/%(path)s?at=%(version)s',
-    'custom': '%(custom)s',
-}
-
 _default_values = {
     # This method transforms option names on every read, get, or set operation.
     # The default config keys are case insensitive. E.g. True -> for case sensitive.
@@ -26,8 +20,8 @@ _default_values = {
     # Repository url including protocol http/https and domain until the root folder.
     'REPOSITORY': None,
 
-    # Type of repository to use some pattern that is know like: github or bitbucket.
-    # Pattern can be customized setting it as custom and filling REPOSITORY_CUSTOM_PATTERN config.
+    # Type of repository to use some pattern that is know like: 'github' or 'bitbucket'.
+    # Pattern can be customized setting it as 'custom' and filling REPOSITORY_CUSTOM_PATTERN config.
     'REPOSITORY_TYPE': None,
 
     # Customization of repository access the recipes with configurations.
@@ -36,10 +30,10 @@ _default_values = {
     'REPOSITORY_CUSTOM_PATTERN': None,
 
     # Absolute path to store files when downloaded via baker
-    'STORAGE_FILES': _HOME_PATH + '/.baker/',
+    'STORAGE_TEMPLATES': _HOME_PATH + '/.baker/templates/',
 
     # Absolute path to store baker key to use secret values
-    'STORAGE_KEY_PATH': _HOME_PATH + '/.baker.key',
+    'STORAGE_KEY_PATH': _HOME_PATH + '/.baker/baker.key',
 
     # Extension for template files. Set 'None' to disable replacement of template name.
     'TEMPLATE_EXT': 'tpl',
@@ -69,7 +63,7 @@ def load(**kwargs):
 
             if upper_key not in values():
                 raise AttributeError(
-                    "Setting '{0}' at '{1}' is not supported.".format(upper_key, rc_file_path)
+                    "Setting '{0}' at '{1}' is not supported".format(upper_key, rc_file_path)
                 )
 
             values()[upper_key] = convert_if_bool(value)
