@@ -14,6 +14,7 @@ class ReplaceTemplate:
 
     def replace(self):
         for config in self.configs:
+            # FIXME: Add force option
             template_path = download(config.template) if config.is_remote else config.template
             template_file = self._file(template_path)
             template = BakerTemplate(template_file)

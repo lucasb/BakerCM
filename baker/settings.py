@@ -4,6 +4,8 @@ from pathlib import Path
 
 
 _HOME_PATH = str(Path.home())
+_BAKER_PATH = _HOME_PATH + '/.baker'
+_BAKERC_PATH = _HOME_PATH + '/.bakerc'
 
 _default_values = {
     # This method transforms option names on every read, get, or set operation.
@@ -26,55 +28,70 @@ _default_values = {
 
     # Customization of repository access the recipes with configurations.
     # To build pattern use variables to build url to access config in a remote repository.
-    # E.g.: '%(repository)s/%(path)s/%(version)s'
+    # E.g.: '%(repository)s/%(path)s.%(ext)s/%(version)s'
     'REPOSITORY_CUSTOM_PATTERN': None,
 
-    # Absolute path to store files when downloaded via baker
-    'STORAGE_TEMPLATES': _HOME_PATH + '/.baker/templates/',
+    # Absolute path to store configs when downloaded via baker
+    'STORAGE_CONFIG': _BAKER_PATH + '/configs/',
+
+    # Absolute path to store index of configs when downloaded via baker
+    'STORAGE_CONFIG_INDEX': _BAKER_PATH + '/index',
 
     # Absolute path to store baker key to use secret values
-    'STORAGE_KEY_PATH': _HOME_PATH + '/.baker/baker.key',
+    'STORAGE_KEY_PATH': _BAKER_PATH + '/baker.key',
+
+    # Absolute path to store templates when downloaded via baker
+    'STORAGE_TEMPLATES': _BAKER_PATH + '/templates/',
 
     # Extension for template files. Set 'None' to disable replacement of template name.
     'TEMPLATE_EXT': 'tpl',
 }
 
 
+def get(key):
+    return values()[key]
+
+
 def load(**kwargs):
     global BAKER_SETTINGS
     BAKER_SETTINGS = _default_values
-    rc_file_path = _HOME_PATH + '/.bakerc'
 
+    _create_baker_structure()
+    _load_configs()
+
+    for key, value in kwargs.items():
+        values()[key] = value
+
+
+def values():
+    return globals()['BAKER_SETTINGS']
+
+
+def _load_configs():
     def convert_if_bool(string):
         lower_str = string.lower()
         if lower_str in ('true', 'false'):
             return lower_str == 'true'
         return string
 
-    if Path(rc_file_path).is_file():
+    if Path(_BAKERC_PATH).is_file():
         parser = ConfigParser()
 
-        with open(rc_file_path) as lines:
+        with open(_BAKERC_PATH) as lines:
             lines = chain(("[DEFAULT]",), lines)
             parser.read_file(lines)
 
         for key, value in parser.defaults().items():
             upper_key = key.upper()
-
             if upper_key not in values():
                 raise AttributeError(
-                    "Setting '{0}' at '{1}' is not supported".format(upper_key, rc_file_path)
+                    "Setting '{0}' at '{1}' is not supported".format(upper_key, _BAKERC_PATH)
                 )
-
             values()[upper_key] = convert_if_bool(value)
 
-    for key, value in kwargs.items():
-        values()[key] = value
 
-
-def get(key):
-    return values()[key]
-
-
-def values():
-    return globals()['BAKER_SETTINGS']
+def _create_baker_structure():
+    if not Path(_BAKER_PATH).is_dir():
+        Path(_BAKER_PATH).mkdir(mode=int('0755', 8))
+        Path(get('STORAGE_CONFIG')).mkdir(mode=int('0755', 8))
+        Path(get('STORAGE_TEMPLATES')).mkdir(mode=int('0755', 8))
