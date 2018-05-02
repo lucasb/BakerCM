@@ -5,7 +5,7 @@ from Crypto.Hash import SHA256
 
 from baker import logger
 from baker import settings
-from baker import file
+from baker.storage import Storage
 
 
 class SecretKey:
@@ -18,7 +18,7 @@ class SecretKey:
         sha256 = SHA256.new(b_key_pass)
         secret_key = sha256.digest()
         secret_store = binascii.hexlify(secret_key).decode(settings.get('ENCODING'))
-        file.secret_key(secret_store)
+        Storage.secret_key(secret_store)
         logger.log("Generated secret key '{0}' "
                    "and saved at '{1}'".format(secret_store, settings.get('STORAGE_KEY_PATH')))
         return secret_store
@@ -28,7 +28,7 @@ class SecretKey:
         """
         Read secret key from storage file
         """
-        return file.secret_key()
+        return Storage.secret_key()
 
 
 class Encryption:

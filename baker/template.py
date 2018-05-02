@@ -5,7 +5,7 @@ from string import Template
 
 from baker import settings
 from baker import logger
-from baker.repository import download
+from baker.storage import file
 
 
 class ReplaceTemplate:
@@ -13,13 +13,14 @@ class ReplaceTemplate:
         self.instructions = instructions
 
     def replace(self):
-        for instruction in self.instruction:
-            # FIXME: Add force option
-            template_path = download(instruction.template) if instruction.is_remote else instruction.template
-            template_file = self._file(template_path)
-            template = BakerTemplate(template_file)
-            replaced = template.replace(instruction.variables) if instruction.variables else template_file
+        for instruction in self.instructions:
             target = instruction.template
+            template_path = instruction.template
+            replaced = file(template_path)
+
+            if instruction.variables:
+                template = BakerTemplate(replaced)
+                replaced = template.replace(instruction.variables)
 
             if hasattr(instruction, 'path'):
                 target = instruction.path
@@ -28,23 +29,9 @@ class ReplaceTemplate:
                 ext_size = len(settings.get('TEMPLATE_EXT')) + 1
                 target = target[:-ext_size]
 
-            self._file(target, mode='w', content=replaced)
+            file(target, content=replaced)
             self._add_file_permission(instruction, target)
             logger.log(instruction.name, instruction.template, target)
-
-    @staticmethod
-    def _file(path, mode='r', content=None):
-        try:
-            with open(path, mode) as file:
-                if mode == 'r':
-                    return file.read()
-                elif content:
-                    return file.write(content)
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                "Template not found at: '%s'. Are you sure that it is available on this path?"
-                % path
-            )
 
     @staticmethod
     def _add_file_permission(instruction, path):

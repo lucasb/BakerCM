@@ -25,6 +25,7 @@ class Parser:
     def _build_cli(commands):
         description = 'Baker is a decentralized configuration management based on files. <:::>'
         help_commands = "Run 'baker COMMAND --help' for more info on a command"
+
         parser = argparse.ArgumentParser(prog='baker', description=description)
         parser.add_argument('-v', '--version', action='version', version='%(prog)s v0.2.0')
         subparsers = parser.add_subparsers(title='commands', metavar='<COMMAND>',
@@ -41,10 +42,12 @@ class Parser:
 
         pull = subparsers.add_parser('pull', help='pull a recipe with configurations')
         pull.add_argument('name', help='name [PATH:VERSION] of recipe')
+        pull.add_argument('-f', '--force', action="store_true", help='force download of recipe')
         pull.set_defaults(cmd=commands.pull)
 
         run = subparsers.add_parser('run', help='run configurations from a recipe')
         run.add_argument('path', help='path of recipe file')
+        run.add_argument('-f', '--force', action="store_true", help='force templates replacement')
         run.set_defaults(cmd=commands.run)
 
         for _parser in [parser, encrypt, genkey, pull, run]:

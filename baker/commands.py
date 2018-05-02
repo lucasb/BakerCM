@@ -7,6 +7,7 @@ from baker.recipe import RecipeParser
 from baker.repository import Repository
 from baker.secret import SecretKey, Encryption
 from baker.template import ReplaceTemplate
+from baker.repository import download
 
 
 class Commands:
@@ -30,8 +31,7 @@ class Commands:
 
     @staticmethod
     def pull(args):
-        # TODO: Add force option
-        Repository(args.name).pull()
+        Repository(args.name).pull(args.force)
 
     # TODO: Add config view
     # TODO: Add list recipes
@@ -39,10 +39,13 @@ class Commands:
 
     @staticmethod
     def run(args):
-        parser = RecipeParser(args.path)
-        for instruction in parser.instructions:
+        recipe = RecipeParser(args.path)
+        for instruction in recipe.instructions:
             instruction.secrets_to_plan()
-        template = ReplaceTemplate(parser.instructions)
+            if instruction.is_remote:
+                instruction.template = download(instruction.template, force=args.force)
+
+        template = ReplaceTemplate(recipe.instructions)
         template.replace()
 
 

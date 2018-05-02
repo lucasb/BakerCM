@@ -8,7 +8,7 @@ from datetime import datetime
 
 from baker import settings
 from baker import logger
-from baker import file
+from baker.storage import Storage
 
 
 class Repository:
@@ -30,16 +30,18 @@ class Repository:
         self.path, self.version = name.split(sep)
         self._check_settings()
 
-    def pull(self, force=False):
-        index = _IndexRecipe(self.path, self.version)
+    def pull(self, force):
         url = self._format_url()
-        target = settings.get('STORAGE_RECIPE') + index.id
-        local_file = download(url, target=target, force=force)
-        index.indexing(local_file)
+        filename = url.rsplit('/', 1)[1]
+        index = _IndexRecipe(self.path, self.version)
+        target = settings.get('STORAGE_RECIPE') + index.id + '/'
+        download(url, target, force)
+        index.indexing(filename)
 
     def _check_settings(self):
         if not self.repository_url or not self.repository_type:
-            raise AttributeError('REPOSITORY and REPOSITORY_TYPE must be set to download instructions')
+            raise AttributeError('REPOSITORY and REPOSITORY_TYPE '
+                                 'must be set to download instructions')
 
         if self.repository_type == 'custom':
             if not self.repository_custom:
@@ -61,7 +63,7 @@ class _IndexRecipe:
         self.remote = remote
         self.version = version
         self.id = self._generate_id()
-        self.index = file.index()
+        self.index = Storage.index()
 
     def is_indexed(self):
         return self.id in self.index.keys()
@@ -69,8 +71,8 @@ class _IndexRecipe:
     def indexing(self, filename):
         if not self.is_indexed():
             self.index[self.id] = {'remote': self.remote, 'version': self.version,
-                                   'filename': filename, 'datetime': datetime.now()}
-            file.index(self.index)
+                                   'filename': filename, 'datetime': str(datetime.now())}
+            Storage.index(self.index)
 
     def _generate_id(self):
         str_base = self.remote + self.version

@@ -1,6 +1,6 @@
 from configparser import ConfigParser
-from itertools import chain
 from pathlib import Path
+from baker.storage import Storage
 
 
 _HOME_PATH = str(Path.home())
@@ -32,7 +32,7 @@ _default_values = {
     'REPOSITORY_CUSTOM_PATTERN': None,
 
     # Absolute path to store instructions when downloaded via baker
-    'STORAGE_RECIPE': _BAKER_PATH + '/instructions/',
+    'STORAGE_RECIPE': _BAKER_PATH + '/recipes/',
 
     # Absolute path to store index of instructions when downloaded via baker
     'STORAGE_RECIPE_INDEX': _BAKER_PATH + '/index',
@@ -75,10 +75,7 @@ def _load_bakerc():
 
     if Path(_BAKERC_PATH).is_file():
         parser = ConfigParser()
-
-        with open(_BAKERC_PATH) as lines:
-            lines = chain(("[DEFAULT]",), lines)
-            parser.read_file(lines)
+        Storage.parser(_BAKERC_PATH, parser, chain_items=("[DEFAULT]",))
 
         for key, value in parser.defaults().items():
             upper_key = key.upper()

@@ -6,10 +6,7 @@ from baker import settings
 def init():
     global LOGGER
     LOGGER = logging.getLogger()
-    level = 'INFO'
-
-    if settings.get('DEBUG'):
-        level = 'DEBUG'
+    level = 'DEBUG' if settings.get('DEBUG') else 'INFO'
 
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter('%(message)s'))

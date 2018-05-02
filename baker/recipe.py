@@ -3,13 +3,14 @@ import configparser
 from baker import settings
 from baker.secret import Encryption, SecretKey
 from baker.repository import is_url
+from baker.storage import Storage
 
 
 class RecipeParser:
     def __init__(self, file, case_sensitive=False):
         self.parser = None
         self.instructions = []
-        self.case_sensitive = case_sensitive or settings.get('CONFIG_CASE_SENSITIVE')
+        self.case_sensitive = case_sensitive or settings.get('RECIPE_CASE_SENSITIVE')
         self.recipe_file = file
         filename = file.lower()
 
@@ -57,15 +58,7 @@ class RecipeParser:
                 for idx, secret in instruction.secrets.items():
                     self.parser[section][idx] = secret
 
-        try:
-            with open(self.recipe_file, 'w') as file:
-                self.parser.write(file)
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                "Recipe file not found at: '%s'. "
-                "Are you sure that it is available on this path?"
-                % self.recipe_file
-            )
+        Storage.parser(self.recipe_file, self.parser, write_mod=True)
 
     @ staticmethod
     def _get_values(parser, section):
@@ -105,7 +98,7 @@ class Instruction:
             self.__setattr__('is_remote', True)
 
             if not template['path']:
-                raise AttributeError("Remove template must have attribute 'path'")
+                raise AttributeError("Remote template must have attribute 'path'")
 
         for attr, value in template.items():
             if attr not in ['template', 'path', 'name', 'user', 'group', 'mode']:
