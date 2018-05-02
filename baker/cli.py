@@ -46,7 +46,8 @@ class Parser:
         pull.set_defaults(cmd=commands.pull)
 
         run = subparsers.add_parser('run', help='run configurations from a recipe')
-        run.add_argument('path', help='path of recipe file')
+        run.add_argument('name', nargs='?', help='name [PATH:VERSION] of recipe')
+        run.add_argument('--path', help='path of recipe file')
         run.add_argument('-f', '--force', action="store_true", help='force templates replacement')
         run.set_defaults(cmd=commands.run)
 

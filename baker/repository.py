@@ -24,6 +24,7 @@ class Repository:
             raise AttributeError(
                 "Attr 'name' has malformed value. It must have ':' splitting path and version")
 
+        self.local_path = None
         self.repository_url = settings.get('REPOSITORY')
         self.repository_type = settings.get('REPOSITORY_TYPE')
         self.repository_custom = settings.get('REPOSITORY_CUSTOM_PATTERN')
@@ -35,8 +36,8 @@ class Repository:
         filename = url.rsplit('/', 1)[1]
         index = _IndexRecipe(self.path, self.version)
         target = settings.get('STORAGE_RECIPE') + index.id + '/'
-        download(url, target, force)
-        index.indexing(filename)
+        self.local_path = download(url, target, force)
+        index.indexing(filename, update=force)
 
     def _check_settings(self):
         if not self.repository_url or not self.repository_type:
@@ -68,8 +69,8 @@ class _IndexRecipe:
     def is_indexed(self):
         return self.id in self.index.keys()
 
-    def indexing(self, filename):
-        if not self.is_indexed():
+    def indexing(self, filename, update=False):
+        if not self.is_indexed() or update:
             self.index[self.id] = {'remote': self.remote, 'version': self.version,
                                    'filename': filename, 'datetime': str(datetime.now())}
             Storage.index(self.index)

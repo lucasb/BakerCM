@@ -39,7 +39,16 @@ class Commands:
 
     @staticmethod
     def run(args):
-        recipe = RecipeParser(args.path)
+        if args.name and not args.path:
+            repo = Repository(args.name)
+            repo.pull(args.force)
+            path = repo.local_path
+        elif not args.name and args.path:
+            path = args.path
+        else:
+            raise ValueError("Run command does not support 'name' and '--path' options together")
+
+        recipe = RecipeParser(path)
         for instruction in recipe.instructions:
             instruction.secrets_to_plan()
             if instruction.is_remote:
