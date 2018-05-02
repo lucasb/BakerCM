@@ -8,16 +8,16 @@ _BAKER_PATH = _HOME_PATH + '/.baker'
 _BAKERC_PATH = _HOME_PATH + '/.bakerc'
 
 _default_values = {
-    # This method transforms option names on every read, get, or set operation.
-    # The default config keys are case insensitive. E.g. True -> for case sensitive.
-    'CONFIG_CASE_SENSITIVE': False,
-
     # DEBUG mode is False as default, it can be change in config file.
     # Using option --verbose in command line DEBUG change to true.
     'DEBUG': False,
 
     # Encode of files and secrets
     'ENCODING': 'utf-8',
+
+    # This method transforms option names on every read, get, or set operation.
+    # The default config keys are case insensitive. E.g. True -> for case sensitive.
+    'RECIPE_CASE_SENSITIVE': False,
 
     # Repository url including protocol http/https and domain until the root folder.
     'REPOSITORY': None,
@@ -26,16 +26,16 @@ _default_values = {
     # Pattern can be customized setting it as 'custom' and filling REPOSITORY_CUSTOM_PATTERN config.
     'REPOSITORY_TYPE': None,
 
-    # Customization of repository access the recipes with configurations.
+    # Customization of repository access the instructions with configurations.
     # To build pattern use variables to build url to access config in a remote repository.
     # E.g.: '%(repository)s/%(path)s.%(ext)s/%(version)s'
     'REPOSITORY_CUSTOM_PATTERN': None,
 
-    # Absolute path to store configs when downloaded via baker
-    'STORAGE_CONFIG': _BAKER_PATH + '/configs/',
+    # Absolute path to store instructions when downloaded via baker
+    'STORAGE_RECIPE': _BAKER_PATH + '/instructions/',
 
-    # Absolute path to store index of configs when downloaded via baker
-    'STORAGE_CONFIG_INDEX': _BAKER_PATH + '/index',
+    # Absolute path to store index of instructions when downloaded via baker
+    'STORAGE_RECIPE_INDEX': _BAKER_PATH + '/index',
 
     # Absolute path to store baker key to use secret values
     'STORAGE_KEY_PATH': _BAKER_PATH + '/baker.key',
@@ -56,8 +56,7 @@ def load(**kwargs):
     global BAKER_SETTINGS
     BAKER_SETTINGS = _default_values
 
-    _create_baker_structure()
-    _load_configs()
+    _load_bakerc()
 
     for key, value in kwargs.items():
         values()[key] = value
@@ -67,7 +66,7 @@ def values():
     return globals()['BAKER_SETTINGS']
 
 
-def _load_configs():
+def _load_bakerc():
     def convert_if_bool(string):
         lower_str = string.lower()
         if lower_str in ('true', 'false'):
@@ -88,10 +87,3 @@ def _load_configs():
                     "Setting '{0}' at '{1}' is not supported".format(upper_key, _BAKERC_PATH)
                 )
             values()[upper_key] = convert_if_bool(value)
-
-
-def _create_baker_structure():
-    if not Path(_BAKER_PATH).is_dir():
-        Path(_BAKER_PATH).mkdir(mode=int('0755', 8))
-        Path(get('STORAGE_CONFIG')).mkdir(mode=int('0755', 8))
-        Path(get('STORAGE_TEMPLATES')).mkdir(mode=int('0755', 8))

@@ -5,17 +5,17 @@ from baker.secret import Encryption, SecretKey
 from baker.repository import is_url
 
 
-class ConfigParser:
+class RecipeParser:
     def __init__(self, file, case_sensitive=False):
         self.parser = None
-        self.configs = []
+        self.instructions = []
         self.case_sensitive = case_sensitive or settings.get('CONFIG_CASE_SENSITIVE')
-        self.config_file = file
+        self.recipe_file = file
         filename = file.lower()
 
         if filename.endswith('.cfg'):
             self.dict_from_ini()
-        # elif filename.endswith('.yml'): # TODO: Add support to configure via yaml file
+        # elif filename.endswith('.yml'): # TODO: Add support recipes via yaml file
         #     self.dict_from_yaml()
         else:
             raise FileExistsError('Unsupported file format')
@@ -26,7 +26,7 @@ class ConfigParser:
         if self.case_sensitive:
             self.parser.optionxform = str
 
-        self.parser.read(self.config_file, encoding=settings.get('ENCODING'))
+        self.parser.read(self.recipe_file, encoding=settings.get('ENCODING'))
 
         if self.parser.sections():
             curr_template = None
@@ -46,25 +46,25 @@ class ConfigParser:
                     else:
                         raise AttributeError('Attribute template is required')
 
-                    self.configs.append(Config(template, variables, secrets))
+                    self.instructions.append(Instruction(template, variables, secrets))
         else:
-            raise FileExistsError('Unable to read configs from file')
+            raise FileExistsError('Unable to read instructions from file')
 
     def update_secrets(self):
-        for config in self.configs:
-            if config.secrets:
-                section = config.name + ':secrets'
-                for idx, secret in config.secrets.items():
+        for instruction in self.instructions:
+            if instruction.secrets:
+                section = instruction.name + ':secrets'
+                for idx, secret in instruction.secrets.items():
                     self.parser[section][idx] = secret
 
         try:
-            with open(self.config_file, 'w') as configfile:
-                self.parser.write(configfile)
+            with open(self.recipe_file, 'w') as file:
+                self.parser.write(file)
         except FileNotFoundError:
             raise FileNotFoundError(
-                "Configuration file not found at: '%s'. "
+                "Recipe file not found at: '%s'. "
                 "Are you sure that it is available on this path?"
-                % self.config_file
+                % self.recipe_file
             )
 
     @ staticmethod
@@ -75,7 +75,7 @@ class ConfigParser:
         return values
 
 
-class Config:
+class Instruction:
     def __init__(self, template, variables=None, secrets=None):
         self._template(template)
         self.variables = variables
@@ -109,5 +109,5 @@ class Config:
 
         for attr, value in template.items():
             if attr not in ['template', 'path', 'name', 'user', 'group', 'mode']:
-                raise AttributeError("Unsupported attribute '%s'in config file" % attr)
+                raise AttributeError("Unsupported attribute '%s'in recipe file" % attr)
             self.__setattr__(attr, value)

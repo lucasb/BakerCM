@@ -9,28 +9,28 @@ from baker.repository import download
 
 
 class ReplaceTemplate:
-    def __init__(self, configs):
-        self.configs = configs
+    def __init__(self, instructions):
+        self.instructions = instructions
 
     def replace(self):
-        for config in self.configs:
+        for instruction in self.instruction:
             # FIXME: Add force option
-            template_path = download(config.template) if config.is_remote else config.template
+            template_path = download(instruction.template) if instruction.is_remote else instruction.template
             template_file = self._file(template_path)
             template = BakerTemplate(template_file)
-            replaced = template.replace(config.variables) if config.variables else template_file
-            target = config.template
+            replaced = template.replace(instruction.variables) if instruction.variables else template_file
+            target = instruction.template
 
-            if hasattr(config, 'path'):
-                target = config.path
+            if hasattr(instruction, 'path'):
+                target = instruction.path
 
             if settings.get('TEMPLATE_EXT') and target.endswith(settings.get('TEMPLATE_EXT')):
                 ext_size = len(settings.get('TEMPLATE_EXT')) + 1
                 target = target[:-ext_size]
 
             self._file(target, mode='w', content=replaced)
-            self._add_file_permission(config, target)
-            logger.log(config.name, config.template, target)
+            self._add_file_permission(instruction, target)
+            logger.log(instruction.name, instruction.template, target)
 
     @staticmethod
     def _file(path, mode='r', content=None):
@@ -47,13 +47,13 @@ class ReplaceTemplate:
             )
 
     @staticmethod
-    def _add_file_permission(config, path):
-        if hasattr(config, 'user') or hasattr(config, 'group'):
-            user = config.user if hasattr(config, 'user') else None
-            group = config.group if hasattr(config, 'group') else None
+    def _add_file_permission(instruction, path):
+        if hasattr(instruction, 'user') or hasattr(instruction, 'group'):
+            user = instruction.user if hasattr(instruction, 'user') else None
+            group = instruction.group if hasattr(instruction, 'group') else None
             shutil.chown(path, user, group)
-        if hasattr(config, 'mode'):
-            os.chmod(path, int(config.mode, 8))
+        if hasattr(instruction, 'mode'):
+            os.chmod(path, int(instruction.mode, 8))
 
 
 class BakerTemplate(Template):
@@ -69,7 +69,7 @@ class BakerTemplate(Template):
 
     def replace(self, mapping):
         try:
-            if settings.get('CONFIG_CASE_SENSITIVE'):
+            if settings.get('RECIPE_CASE_SENSITIVE'):
                 return super(BakerTemplate, self).substitute(mapping)
             else:
                 return self.ignore_case_substitute(mapping)
@@ -79,8 +79,7 @@ class BakerTemplate(Template):
     def ignore_case_substitute(self, mapping):
         if not mapping:
             raise TypeError(
-                "Descriptor 'ignore_case_substitute' of 'BakerTemplate' "
-                "object needs an argument."
+                "Descriptor 'ignore_case_substitute' of 'BakerTemplate' object needs an argument."
             )
 
         def convert(mo):

@@ -3,7 +3,7 @@ import traceback
 from baker import logger
 from baker import settings
 from baker.cli import Parser
-from baker.configuration import ConfigParser
+from baker.recipe import RecipeParser
 from baker.repository import Repository
 from baker.secret import SecretKey, Encryption
 from baker.template import ReplaceTemplate
@@ -16,10 +16,9 @@ class Commands:
         enc = Encryption(secret_key)
 
         if args.file:
-            parser = ConfigParser(args.file, case_sensitive=True)
-            for config in parser.configs:
-                config.plan_to_secrets()
-
+            parser = RecipeParser(args.file, case_sensitive=True)
+            for instruction in parser.instructions:
+                instruction.plan_to_secrets()
             parser.update_secrets()
         elif args.plantexts:
             for text in args.plantexts:
@@ -31,20 +30,19 @@ class Commands:
 
     @staticmethod
     def pull(args):
+        # TODO: Add force option
         Repository(args.name).pull()
 
-    # TODO: Add recipes view
-    # TODO: Add list configs
-    # TODO: Add remove recipes
-    # TODO: REFACTOR ----> all about configuration to recipe
+    # TODO: Add config view
+    # TODO: Add list recipes
+    # TODO: Add remove a recipe
 
     @staticmethod
     def run(args):
-        parser = ConfigParser(args.path)
-        for config in parser.configs:
-            config.secrets_to_plan()
-
-        template = ReplaceTemplate(parser.configs)
+        parser = RecipeParser(args.path)
+        for instruction in parser.instructions:
+            instruction.secrets_to_plan()
+        template = ReplaceTemplate(parser.instructions)
         template.replace()
 
 

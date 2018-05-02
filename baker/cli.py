@@ -44,7 +44,7 @@ class Parser:
         pull.set_defaults(cmd=commands.pull)
 
         run = subparsers.add_parser('run', help='run configurations from a recipe')
-        run.add_argument('path', help='path of configuration file')
+        run.add_argument('path', help='path of recipe file')
         run.set_defaults(cmd=commands.run)
 
         for _parser in [parser, encrypt, genkey, pull, run]:

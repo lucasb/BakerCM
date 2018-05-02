@@ -1,17 +1,18 @@
 import re
-import json
 import hashlib
 
-from os import path
+from os import makedirs, path
 from urllib.request import urlretrieve
 from urllib.parse import urlsplit
+from datetime import datetime
 
 from baker import settings
 from baker import logger
+from baker import file
 
 
 class Repository:
-    ext = 'cfg'  # TODO: Add support to configure via yaml file
+    ext = 'cfg'  # TODO: Add support recipe via yaml file
     repository_patterns = {
         'github': '%(repository)s/%(version)s/%(path)s.%(ext)s',
         'bitbucket': '%(repository)s/%(path)s.%(ext)s?at=%(version)s',
@@ -27,18 +28,18 @@ class Repository:
         self.repository_type = settings.get('REPOSITORY_TYPE')
         self.repository_custom = settings.get('REPOSITORY_CUSTOM_PATTERN')
         self.path, self.version = name.split(sep)
-        self._check_config()
+        self._check_settings()
 
     def pull(self, force=False):
         index = _IndexRecipe(self.path, self.version)
         url = self._format_url()
-        # FIXME: Add force option
-        local_file = download(url, target=settings.get('STORAGE_CONFIG'), force=force)
+        target = settings.get('STORAGE_RECIPE') + index.id
+        local_file = download(url, target=target, force=force)
         index.indexing(local_file)
 
-    def _check_config(self):
+    def _check_settings(self):
         if not self.repository_url or not self.repository_type:
-            raise AttributeError('REPOSITORY and REPOSITORY_TYPE must be set to download recipes')
+            raise AttributeError('REPOSITORY and REPOSITORY_TYPE must be set to download instructions')
 
         if self.repository_type == 'custom':
             if not self.repository_custom:
@@ -60,7 +61,7 @@ class _IndexRecipe:
         self.remote = remote
         self.version = version
         self.id = self._generate_id()
-        self.index = self._load_index()
+        self.index = file.index()
 
     def is_indexed(self):
         return self.id in self.index.keys()
@@ -68,22 +69,13 @@ class _IndexRecipe:
     def indexing(self, filename):
         if not self.is_indexed():
             self.index[self.id] = {'remote': self.remote, 'version': self.version,
-                                   'filename': filename}
-            with open(settings.get('STORAGE_CONFIG_INDEX'), 'w+') as file:
-                json.dump(self.index, file)
+                                   'filename': filename, 'datetime': datetime.now()}
+            file.index(self.index)
 
     def _generate_id(self):
         str_base = self.remote + self.version
         str_hash = hashlib.sha256(str_base.encode(settings.get('ENCODING')))
         return str_hash.hexdigest()
-
-    @staticmethod
-    def _load_index():
-        data = {}
-        if path.isfile(settings.get('STORAGE_CONFIG_INDEX')):
-            with open(settings.get('STORAGE_CONFIG_INDEX')) as file:
-                data = json.load(file)
-        return data
 
 
 def download(url, target=None, force=False):
@@ -93,8 +85,9 @@ def download(url, target=None, force=False):
     storage_folder = target or settings.get('STORAGE_TEMPLATES')
     file_name = path.basename(urlsplit(url).path)
     file_path = storage_folder + file_name
-    # FIXME: create folder with id in config, maybe for templates too.
+
     if force or not path.isfile(file_path):
+        _create_folders(storage_folder)
         urlretrieve(url, file_path)
         logger.log(url, 'download DONE!')
     else:
@@ -113,3 +106,8 @@ def is_url(url):
         r'(?::\d+)?'  # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return url_pattern.match(url)
+
+
+def _create_folders(directory):
+    if not path.exists(directory):
+        makedirs(directory, mode=int('0755', 8))
