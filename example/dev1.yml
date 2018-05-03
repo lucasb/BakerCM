@@ -1,4 +1,4 @@
-# Example of configs in yaml
+# Example of recipe in yaml
 
 env: development1
 templates:

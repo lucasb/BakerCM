@@ -3,23 +3,20 @@ import json
 from os import makedirs, path
 from itertools import chain
 
-from baker import settings
-
 
 class Storage:
     @staticmethod
-    def index(recipes=None):
-        index_path = settings.get('STORAGE_RECIPE_INDEX')
-        index_dir_path = index_path.rsplit('/', 1)[0]
+    def json(location, content=None):
+        dir_path = location.rsplit('/', 1)[0]
 
-        if recipes:
-            _create_folders(index_dir_path)
-            with open(index_path, 'w+') as lines:
-                json.dump(recipes, lines)
+        if content is not None:
+            _create_folders(dir_path)
+            with open(location, 'w+') as lines:
+                json.dump(content, lines)
         else:
             data = {}
-            if path.isfile(index_path):
-                with open(index_path) as lines:
+            if path.isfile(location):
+                with open(location) as lines:
                     data = json.load(lines)
             return data
 
@@ -41,8 +38,8 @@ class Storage:
             )
 
     @staticmethod
-    def secret_key(key=None):
-        return file(settings.get('STORAGE_KEY_PATH'), content=key)
+    def secret_key(location, key=None):
+        return file(location, content=key)
 
 
 def file(location, content=None):

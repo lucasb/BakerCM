@@ -34,10 +34,24 @@ class Repository:
     def pull(self, force):
         url = self._format_url()
         filename = url.rsplit('/', 1)[1]
-        index = _IndexRecipe(self.path, self.version)
+        index = _IndexRecipe(self.path, self.version, filename)
         target = settings.get('STORAGE_RECIPE') + index.id + '/'
         self.local_path = download(url, target, force)
-        index.indexing(filename, update=force)
+        index.indexing(update=force)
+
+    @staticmethod
+    def remove(rid):
+        location = settings.get('STORAGE_RECIPE_INDEX')
+        index = Storage.json(location)
+
+        if len(rid) != 64:
+            found = list(filter(lambda idx: idx[:9] == rid, index))
+            if found:
+                rid = found[0]
+
+        del index[rid]
+        Storage.json(location, index)
+        logger.log("Removed recipe '%s'" % rid)
 
     def _check_settings(self):
         if not self.repository_url or not self.repository_type:
@@ -59,26 +73,38 @@ class Repository:
                           'path': self.path, 'version': self.version}
 
 
-class _IndexRecipe:
-    def __init__(self, remote, version):
-        self.remote = remote
-        self.version = version
-        self.id = self._generate_id()
-        self.index = Storage.index()
+class ListRecipes:
+    @staticmethod
+    def list(all_info=False):
+        recipes = Storage.json(settings.get('STORAGE_RECIPE_INDEX'))
+        meta = _IndexRecipe.calc_length(recipes)
+        meta['id'] = 64 if all_info else 9
+        extra_space = 8
+        list_items = ''
 
-    def is_indexed(self):
-        return self.id in self.index.keys()
+        for key in recipes.keys():
+            recipe = recipes[key]
+            recipe_id = key[:meta['id']]
+            created = recipe['datetime'] if all_info else recipe['datetime'][:19]
 
-    def indexing(self, filename, update=False):
-        if not self.is_indexed() or update:
-            self.index[self.id] = {'remote': self.remote, 'version': self.version,
-                                   'filename': filename, 'datetime': str(datetime.now())}
-            Storage.index(self.index)
+            list_items += recipe_id + (' ' * (meta['id'] + extra_space - len(recipe_id)))
 
-    def _generate_id(self):
-        str_base = self.remote + self.version
-        str_hash = hashlib.sha256(str_base.encode(settings.get('ENCODING')))
-        return str_hash.hexdigest()
+            for attr_name in ['remote', 'version', 'filename']:
+                list_items += (recipe[attr_name] +
+                               (' ' * (meta[attr_name] + extra_space - len(recipe[attr_name]))))
+
+            list_items += created + '\n'
+
+        header = ListRecipes._list_header(meta, extra_space)
+        logger.log(header + list_items)
+
+    @staticmethod
+    def _list_header(meta, extra_space=0):
+        return ('RECIPE ID' + (' ' * (meta['id'] + extra_space - 9)) +
+                'REMOTE' + (' ' * (meta['remote'] + extra_space - 6)) +
+                'VERSION' + (' ' * (meta['version'] + extra_space - 7)) +
+                'FILENAME' + (' ' * (meta['filename'] + extra_space - 8)) +
+                'CREATED \n')
 
 
 def download(url, target=None, force=False):
@@ -109,6 +135,42 @@ def is_url(url):
         r'(?::\d+)?'  # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return url_pattern.match(url)
+
+
+class _IndexRecipe:
+    def __init__(self, remote, version, filename):
+        self.remote = remote
+        self.version = version
+        self.filename = filename
+        self.id = self._generate_id()
+        self.index = Storage.json(settings.get('STORAGE_RECIPE_INDEX'))
+
+    def is_indexed(self):
+        return self.id in self.index.keys()
+
+    def indexing(self, update=False):
+        if not self.is_indexed() or update:
+            self.index[self.id] = {'remote': self.remote, 'version': self.version,
+                                   'filename': self.filename, 'datetime': str(datetime.now())}
+            Storage.json(settings.get('STORAGE_RECIPE_INDEX'), self.index)
+
+    @staticmethod
+    def calc_length(recipes):
+        lengths = {'remote': 6, 'version': 7, 'filename': 8}
+
+        for recipe_id in recipes:
+            for attr_name in ['remote', 'version', 'filename']:
+                recipe = recipes[recipe_id]
+                attr_size = len(recipe[attr_name])
+                if attr_size > lengths[attr_name]:
+                    lengths[attr_name] = attr_size
+
+        return lengths
+
+    def _generate_id(self):
+        str_base = self.remote + self.version
+        str_hash = hashlib.sha256(str_base.encode(settings.get('ENCODING')))
+        return str_hash.hexdigest()
 
 
 def _create_folders(directory):

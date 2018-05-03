@@ -7,10 +7,20 @@ from baker.recipe import RecipeParser
 from baker.repository import Repository
 from baker.secret import SecretKey, Encryption
 from baker.template import ReplaceTemplate
-from baker.repository import download
+from baker.repository import ListRecipes, download
 
 
 class Commands:
+    @staticmethod
+    def config(args):
+        configs = settings.values(custom_only=not args.all)
+
+        if args.all:
+            for key, value in configs.items():
+                logger.log(key + '=' + str(value))
+        else:
+            logger.log(configs)
+
     @staticmethod
     def encrypt(args):
         secret_key = str(SecretKey().key)
@@ -33,9 +43,13 @@ class Commands:
     def pull(args):
         Repository(args.name).pull(args.force)
 
-    # TODO: Add config view
-    # TODO: Add list recipes
-    # TODO: Add remove a recipe
+    @staticmethod
+    def list(args):
+        ListRecipes.list(args.all)
+
+    @staticmethod
+    def rm_recipe(args):
+        Repository.remove(args.recipe_id)
 
     @staticmethod
     def run(args):

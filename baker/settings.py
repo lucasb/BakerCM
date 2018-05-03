@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 from pathlib import Path
-from baker.storage import Storage
+from baker.storage import Storage, file
 
 
 _HOME_PATH = str(Path.home())
@@ -37,6 +37,9 @@ _default_values = {
     # Absolute path to store index of instructions when downloaded via baker
     'STORAGE_RECIPE_INDEX': _BAKER_PATH + '/index',
 
+    # Absolute path to store meta of instructions when downloaded via baker
+    'STORAGE_RECIPE_META': _BAKER_PATH + '/meta',
+
     # Absolute path to store baker key to use secret values
     'STORAGE_KEY_PATH': _BAKER_PATH + '/baker.key',
 
@@ -62,7 +65,9 @@ def load(**kwargs):
         values()[key] = value
 
 
-def values():
+def values(custom_only=False):
+    if custom_only:
+        return file(_BAKERC_PATH)
     return globals()['BAKER_SETTINGS']
 
 
