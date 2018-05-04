@@ -4,6 +4,9 @@ from baker import settings
 
 
 def init():
+    """
+    Initialize logger for all application
+    """
     global LOGGER
     LOGGER = logging.getLogger()
     level = 'DEBUG' if settings.get('DEBUG') else 'INFO'
@@ -15,8 +18,14 @@ def init():
 
 
 def log(*args):
+    """
+    Logging usual message on cli
+    """
     globals()['LOGGER'].info(' '.join(args))
 
 
 def debug(*args):
+    """
+    Logging debug information on cli
+    """
     globals()['LOGGER'].debug('DEBUG: ' + (' '.join(args)))

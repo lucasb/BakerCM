@@ -12,6 +12,9 @@ from baker.storage import Storage
 
 
 class Repository:
+    """
+    Repository management of recipes
+    """
     ext = 'cfg'  # TODO: Add support recipe via yaml file
     repository_patterns = {
         'github': '%(repository)s/%(version)s/%(path)s.%(ext)s',
@@ -32,6 +35,9 @@ class Repository:
         self._check_settings()
 
     def pull(self, force):
+        """
+        Pull recipe by path and verison
+        """
         url = self._format_url()
         filename = url.rsplit('/', 1)[1]
         index = _IndexRecipe(self.path, self.version, filename)
@@ -41,6 +47,9 @@ class Repository:
 
     @staticmethod
     def remove(rid):
+        """
+        Remove locally recipe by id
+        """
         location = settings.get('STORAGE_RECIPE_INDEX')
         index = Storage.json(location)
 
@@ -54,6 +63,9 @@ class Repository:
         logger.log("Removed recipe '%s'" % rid)
 
     def _check_settings(self):
+        """
+        Verify if required settings is right to repository works
+        """
         if not self.repository_url or not self.repository_type:
             raise AttributeError('REPOSITORY and REPOSITORY_TYPE '
                                  'must be set to download instructions')
@@ -74,8 +86,14 @@ class Repository:
 
 
 class ListRecipes:
+    """
+    List recipes in local storage
+    """
     @staticmethod
     def list(all_info=False):
+        """
+        List of recipes saved in index
+        """
         recipes = Storage.json(settings.get('STORAGE_RECIPE_INDEX'))
         meta = _IndexRecipe.calc_length(recipes)
         meta['id'] = 64 if all_info else 9
@@ -100,6 +118,9 @@ class ListRecipes:
 
     @staticmethod
     def _list_header(meta, extra_space=0):
+        """
+        Build header of recipes list
+        """
         return ('RECIPE ID' + (' ' * (meta['id'] + extra_space - 9)) +
                 'REMOTE' + (' ' * (meta['remote'] + extra_space - 6)) +
                 'VERSION' + (' ' * (meta['version'] + extra_space - 7)) +
@@ -108,6 +129,9 @@ class ListRecipes:
 
 
 def download(url, target=None, force=False):
+    """
+    Download and storage file from a url
+    """
     if not is_url(url):
         raise TypeError("Str '%s' is not a valid url." % url)
 
@@ -116,7 +140,7 @@ def download(url, target=None, force=False):
     file_path = storage_folder + file_name
 
     if force or not path.isfile(file_path):
-        _create_folders(storage_folder)
+        Storage.create_folders(storage_folder)
         urlretrieve(url, file_path)
         logger.log(url, 'download DONE!')
     else:
@@ -126,6 +150,9 @@ def download(url, target=None, force=False):
 
 
 def is_url(url):
+    """
+    Verify if string is following url pattern
+    """
     url_pattern = re.compile(
         r'^(?:http|ftp)s?://'  # http:// or https://
         # domain..
@@ -138,6 +165,9 @@ def is_url(url):
 
 
 class _IndexRecipe:
+    """
+    Index recipes management
+    """
     def __init__(self, remote, version, filename):
         self.remote = remote
         self.version = version
@@ -146,9 +176,15 @@ class _IndexRecipe:
         self.index = Storage.json(settings.get('STORAGE_RECIPE_INDEX'))
 
     def is_indexed(self):
+        """
+        Check if recipe is indexed locally
+        """
         return self.id in self.index.keys()
 
     def indexing(self, update=False):
+        """
+        Indexing recipes locally
+        """
         if not self.is_indexed() or update:
             self.index[self.id] = {'remote': self.remote, 'version': self.version,
                                    'filename': self.filename, 'datetime': str(datetime.now())}
@@ -156,6 +192,9 @@ class _IndexRecipe:
 
     @staticmethod
     def calc_length(recipes):
+        """
+        Calculate size of values in index file
+        """
         lengths = {'remote': 6, 'version': 7, 'filename': 8}
 
         for recipe_id in recipes:
@@ -168,11 +207,9 @@ class _IndexRecipe:
         return lengths
 
     def _generate_id(self):
+        """
+        Generate a hash as id to a recipe based on path and version
+        """
         str_base = self.remote + self.version
         str_hash = hashlib.sha256(str_base.encode(settings.get('ENCODING')))
         return str_hash.hexdigest()
-
-
-def _create_folders(directory):
-    if not path.exists(directory):
-        makedirs(directory, mode=int('0755', 8))

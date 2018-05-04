@@ -11,10 +11,15 @@ from baker.repository import ListRecipes, download
 
 
 class Commands:
+    """
+    Commands available for baker
+    """
     @staticmethod
     def config(args):
+        """
+        List of current baker configs
+        """
         configs = settings.values(custom_only=not args.all)
-
         if args.all:
             for key, value in configs.items():
                 logger.log(key + '=' + str(value))
@@ -23,6 +28,9 @@ class Commands:
 
     @staticmethod
     def encrypt(args):
+        """
+        Encrypt values from recipe file or list of strings
+        """
         secret_key = str(SecretKey().key)
         enc = Encryption(secret_key)
 
@@ -37,22 +45,37 @@ class Commands:
 
     @staticmethod
     def generate_key(args):
+        """
+        Generate and storage secret key from key pass to encrypt secret values
+        """
         SecretKey.generate(args.keypass)
 
     @staticmethod
     def pull(args):
+        """
+        Pull recipe from repository and version specific
+        """
         Repository(args.name).pull(args.force)
 
     @staticmethod
     def recipes(args):
+        """
+        List all recipes locally
+        """
         ListRecipes.list(args.all)
 
     @staticmethod
     def rm_recipe(args):
+        """
+        Remove local recipe from id
+        """
         Repository.remove(args.recipe_id)
 
     @staticmethod
     def run(args):
+        """
+        Run a recipe from local path or get it from repository
+        """
         if args.name and not args.path:
             repo = Repository(args.name)
             repo.pull(args.force)
@@ -73,6 +96,9 @@ class Commands:
 
 
 def execute_command_line(args):
+    """
+    Execute command line and wrap exceptions to show a friendly message
+    """
     del args[0]
     parser = Parser(args, Commands)
     options = parser.options

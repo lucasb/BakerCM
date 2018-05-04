@@ -2,18 +2,30 @@ import argparse
 
 
 class Parser:
+    """
+    Parser to build command line interface
+    """
     def __init__(self, args, commands):
         self.parser, encrypt = self._build_cli(commands)
         self.options = self.parser.parse_args(args)
         self._parser_checks(encrypt, args)
 
     def execute(self):
+        """
+        Execute commands defined in sub parser sending arguments values
+        """
         self.options.cmd(self.options)
 
     def exit_with_error(self, message=None):
+        """
+        Exit command line interaction with error and a message too
+        """
         self.parser.exit(1, message)
 
     def _parser_checks(self, encrypt, args):
+        """
+        Special checker to verify with all requirements to execute
+        """
         if 'cmd' not in self.options:
             self.parser.print_help()
             self.parser.exit()
@@ -23,6 +35,9 @@ class Parser:
 
     @staticmethod
     def _build_cli(commands):
+        """
+        Build command line interface options for baker commands with help instructions
+        """
         description = 'Baker is a decentralized configuration management based on files. <:::>'
         help_commands = "Run 'baker COMMAND --help' for more info on a command"
 

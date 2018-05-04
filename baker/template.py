@@ -5,18 +5,24 @@ from string import Template
 
 from baker import settings
 from baker import logger
-from baker.storage import file
+from baker.storage import Storage
 
 
 class ReplaceTemplate:
+    """
+    Replace items in template file based on recipe mapping
+    """
     def __init__(self, instructions):
         self.instructions = instructions
 
     def replace(self):
+        """
+        Replace variables in template file based on recipe instructions
+        """
         for instruction in self.instructions:
             target = instruction.template
             template_path = instruction.template
-            replaced = file(template_path)
+            replaced = Storage.file(template_path)
 
             if instruction.variables:
                 template = BakerTemplate(replaced)
@@ -29,12 +35,15 @@ class ReplaceTemplate:
                 ext_size = len(settings.get('TEMPLATE_EXT')) + 1
                 target = target[:-ext_size]
 
-            file(target, content=replaced)
+            Storage.file(target, content=replaced)
             self._add_file_permission(instruction, target)
             logger.log(instruction.name, instruction.template, target)
 
     @staticmethod
     def _add_file_permission(instruction, path):
+        """
+        Add permission and owner for templates files after replace
+        """
         if hasattr(instruction, 'user') or hasattr(instruction, 'group'):
             user = instruction.user if hasattr(instruction, 'user') else None
             group = instruction.group if hasattr(instruction, 'group') else None
@@ -44,6 +53,9 @@ class ReplaceTemplate:
 
 
 class BakerTemplate(Template):
+    """
+    Template with baker pattern of variables
+    """
     delimiter = '{{'
     pattern = r'''
         \{\{\ *(?:
@@ -55,6 +67,9 @@ class BakerTemplate(Template):
     '''
 
     def replace(self, mapping):
+        """
+        Replace variable based on mapping key
+        """
         try:
             if settings.get('RECIPE_CASE_SENSITIVE'):
                 return super(BakerTemplate, self).substitute(mapping)
@@ -64,6 +79,9 @@ class BakerTemplate(Template):
             raise KeyError('Missing variable %s' % e)
 
     def ignore_case_substitute(self, mapping):
+        """
+        Substitution of values in replace ignoring case sensitive of variables
+        """
         if not mapping:
             raise TypeError(
                 "Descriptor 'ignore_case_substitute' of 'BakerTemplate' object needs an argument."

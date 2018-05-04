@@ -7,6 +7,9 @@ from baker.storage import Storage
 
 
 class RecipeParser:
+    """
+    Parser recipes from file
+    """
     def __init__(self, file, case_sensitive=False):
         self.parser = None
         self.instructions = []
@@ -22,6 +25,9 @@ class RecipeParser:
             raise FileExistsError('Unsupported file format')
 
     def dict_from_ini(self):
+        """
+        Load instruction from a recipe with ini format
+        """
         self.parser = configparser.ConfigParser()
 
         if self.case_sensitive:
@@ -52,6 +58,9 @@ class RecipeParser:
             raise FileExistsError('Unable to read instructions from file')
 
     def update_secrets(self):
+        """
+        Replace secret values with encrypt values in recipe
+        """
         for instruction in self.instructions:
             if instruction.secrets:
                 section = instruction.name + ':secrets'
@@ -62,6 +71,9 @@ class RecipeParser:
 
     @ staticmethod
     def _get_values(parser, section):
+        """
+        Helper to get values from a section in parser
+        """
         values = None
         if parser.has_section(section):
             values = dict(parser.items(section))
@@ -69,12 +81,18 @@ class RecipeParser:
 
 
 class Instruction:
+    """
+    Instructions from a recipe to configure
+    """
     def __init__(self, template, variables=None, secrets=None):
         self._template(template)
         self.variables = variables
         self.secrets = secrets
 
     def secrets_to_plan(self):
+        """
+        Decrypt values from secret values using secret key
+        """
         if self.secrets:
             if not self.variables:
                 self.variables = {}
@@ -86,6 +104,9 @@ class Instruction:
                 self.variables[idx] = decrypted_value
 
     def plan_to_secrets(self):
+        """
+        Encrypt values in secret session from a recipe file
+        """
         if self.secrets:
             secret_key = SecretKey()
             encryption = Encryption(secret_key.key)
@@ -93,6 +114,9 @@ class Instruction:
             self.secrets = dict(map(lambda s: (s[0], encryption.encrypt(s[1])), items))
 
     def _template(self, template):
+        """
+        Validate and structure template attributes
+        """
         self.__setattr__('is_remote', False)
         if is_url(template['template']):
             self.__setattr__('is_remote', True)

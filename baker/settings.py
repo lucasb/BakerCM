@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 from pathlib import Path
-from baker.storage import Storage, file
+from baker.storage import Storage
 
 
 _HOME_PATH = str(Path.home())
@@ -52,10 +52,16 @@ _default_values = {
 
 
 def get(key):
+    """
+    Get setting value from kwy
+    """
     return values()[key]
 
 
 def load(**kwargs):
+    """
+    Initial load of settings for running
+    """
     global BAKER_SETTINGS
     BAKER_SETTINGS = _default_values
 
@@ -66,12 +72,18 @@ def load(**kwargs):
 
 
 def values(custom_only=False):
+    """
+    List of settings custom and defaults
+    """
     if custom_only:
-        return file(_BAKERC_PATH)
+        return Storage.file(_BAKERC_PATH)
     return globals()['BAKER_SETTINGS']
 
 
 def _load_bakerc():
+    """
+    Load settings from bakerc file
+    """
     def convert_if_bool(string):
         lower_str = string.lower()
         if lower_str in ('true', 'false'):

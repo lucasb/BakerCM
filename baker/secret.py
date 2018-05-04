@@ -9,6 +9,9 @@ from baker.storage import Storage
 
 
 class SecretKey:
+    """
+    Secret key is the key generated from a key pass to encrypt and decript secret values in recipes
+    """
     @staticmethod
     def generate(key_pass):
         """
@@ -18,7 +21,7 @@ class SecretKey:
         sha256 = SHA256.new(b_key_pass)
         secret_key = sha256.digest()
         secret_store = binascii.hexlify(secret_key).decode(settings.get('ENCODING'))
-        Storage.secret_key(settings.get('STORAGE_KEY_PATH'), secret_store)
+        Storage.file(settings.get('STORAGE_KEY_PATH'), secret_store)
         logger.log("Generated secret key '{0}' "
                    "and saved at '{1}'".format(secret_store, settings.get('STORAGE_KEY_PATH')))
         return secret_store
@@ -28,10 +31,13 @@ class SecretKey:
         """
         Read secret key from storage file
         """
-        return Storage.secret_key(settings.get('STORAGE_KEY_PATH'))
+        return Storage.file(settings.get('STORAGE_KEY_PATH'))
 
 
 class Encryption:
+    """
+    Encryption for secret values in recipes
+    """
     def __init__(self, secret_key):
         """
         Initialize with a security key in hexadecimal utf-8 as default format

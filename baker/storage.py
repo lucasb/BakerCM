@@ -5,12 +5,18 @@ from itertools import chain
 
 
 class Storage:
+    """
+    Storage control of data in files
+    """
     @staticmethod
     def json(location, content=None):
+        """
+        Read and write json format from file
+        """
         dir_path = location.rsplit('/', 1)[0]
 
         if content is not None:
-            _create_folders(dir_path)
+            Storage.create_folders(dir_path)
             with open(location, 'w+') as lines:
                 json.dump(content, lines)
         else:
@@ -22,6 +28,9 @@ class Storage:
 
     @staticmethod
     def parser(location, parser, write_mod=False, chain_items=None):
+        """
+        Read and write file using parser of ini data
+        """
         try:
             if write_mod:
                 with open(location, 'w+') as lines:
@@ -38,28 +47,30 @@ class Storage:
             )
 
     @staticmethod
-    def secret_key(location, key=None):
-        return file(location, content=key)
+    def file(location, content=None):
+        """
+        Read and write raw values from file
+        """
+        if content:
+            directory = path.split(location)[0]
+            Storage.create_folders(directory)
+            with open(location, 'w+') as f:
+                f.write(content)
+        else:
+            try:
+                with open(location) as f:
+                    return f.read()
+            except FileNotFoundError:
+                raise FileNotFoundError(
+                    "File not found at: '%s' "
+                    "Are you sure that it is available on this path?"
+                    % location
+                )
 
-
-def file(location, content=None):
-    if content:
-        directory = path.split(location)[0]
-        _create_folders(directory)
-        with open(location, 'w+') as f:
-            f.write(content)
-    else:
-        try:
-            with open(location) as f:
-                return f.read()
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                "File not found at: '%s' "
-                "Are you sure that it is available on this path?"
-                % location
-            )
-
-
-def _create_folders(directory):
-    if not path.exists(directory):
-        makedirs(directory, mode=int('0755', 8))
+    @staticmethod
+    def create_folders(directory):
+        """
+        Create structure of folders if it not exists
+        """
+        if not path.exists(directory):
+            makedirs(directory, mode=int('0755', 8))
