@@ -31,7 +31,7 @@ class Parser:
         subparsers = parser.add_subparsers(title='commands', metavar='<COMMAND>',
                                            help=help_commands)
 
-        config = subparsers.add_parser('config', help='list of configs')
+        config = subparsers.add_parser('configs', help='list of configs')
         config.add_argument('-a', '--all', action="store_true", help='list default values too')
         config.set_defaults(cmd=commands.config)
 
@@ -44,14 +44,14 @@ class Parser:
         genkey.add_argument('keypass', help='key pass to generate a secret key')
         genkey.set_defaults(cmd=commands.generate_key)
 
-        list_recipes = subparsers.add_parser('list', help='list recipes locally')
-        list_recipes.add_argument('-a', '--all', action="store_true",
-                                  help='list all details of recipes locally ')
-        list_recipes.set_defaults(cmd=commands.list)
+        recipes = subparsers.add_parser('recipes', help='list recipes locally')
+        recipes.add_argument('-a', '--all', action="store_true",
+                             help='list all details of recipes locally ')
+        recipes.set_defaults(cmd=commands.recipes)
 
-        rm_recipe = subparsers.add_parser('rm', help='remove recipes locally')
-        rm_recipe.add_argument('recipe_id', help='recipe id to be removed')
-        rm_recipe.set_defaults(cmd=commands.rm_recipe)
+        rm = subparsers.add_parser('rm', help='remove recipes locally')
+        rm.add_argument('recipe_id', help='recipe id to be removed')
+        rm.set_defaults(cmd=commands.rm_recipe)
 
         pull = subparsers.add_parser('pull', help='pull a recipe with configurations')
         pull.add_argument('name', help='name [PATH:VERSION] of recipe')
@@ -64,7 +64,7 @@ class Parser:
         run.add_argument('-f', '--force', action="store_true", help='force templates replacement')
         run.set_defaults(cmd=commands.run)
 
-        for _parser in [parser, config, encrypt, genkey, list_recipes, pull, rm_recipe, run]:
+        for _parser in [parser, config, encrypt, genkey, recipes, pull, rm, run]:
             _parser.add_argument('--verbose', action="store_true", help='increase output verbosity')
 
         return parser, encrypt

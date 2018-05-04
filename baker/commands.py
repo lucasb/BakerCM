@@ -44,7 +44,7 @@ class Commands:
         Repository(args.name).pull(args.force)
 
     @staticmethod
-    def list(args):
+    def recipes(args):
         ListRecipes.list(args.all)
 
     @staticmethod
