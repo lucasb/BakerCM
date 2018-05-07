@@ -1,5 +1,7 @@
 import argparse
 
+from baker import __version__
+
 
 class Parser:
     """
@@ -41,8 +43,8 @@ class Parser:
         description = 'Baker is a decentralized configuration management based on files. <:::>'
         help_commands = "Run 'baker COMMAND --help' for more info on a command"
 
-        parser = argparse.ArgumentParser(prog='baker', description=description)
-        parser.add_argument('-v', '--version', action='version', version='%(prog)s v0.2.0')
+        parser = argparse.ArgumentParser(prog='Baker', description=description)
+        parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
         subparsers = parser.add_subparsers(title='commands', metavar='<COMMAND>',
                                            help=help_commands)
 
@@ -59,6 +61,11 @@ class Parser:
         genkey.add_argument('keypass', help='key pass to generate a secret key')
         genkey.set_defaults(cmd=commands.generate_key)
 
+        pull = subparsers.add_parser('pull', help='pull a recipe with configurations')
+        pull.add_argument('name', help='name [PATH:VERSION] of recipe')
+        pull.add_argument('-f', '--force', action="store_true", help='force download of recipe')
+        pull.set_defaults(cmd=commands.pull)
+
         recipes = subparsers.add_parser('recipes', help='list recipes locally')
         recipes.add_argument('-a', '--all', action="store_true",
                              help='list all details of recipes locally ')
@@ -68,18 +75,13 @@ class Parser:
         rm.add_argument('recipe_id', help='recipe id to be removed')
         rm.set_defaults(cmd=commands.rm_recipe)
 
-        pull = subparsers.add_parser('pull', help='pull a recipe with configurations')
-        pull.add_argument('name', help='name [PATH:VERSION] of recipe')
-        pull.add_argument('-f', '--force', action="store_true", help='force download of recipe')
-        pull.set_defaults(cmd=commands.pull)
-
         run = subparsers.add_parser('run', help='run configurations from a recipe')
         run.add_argument('name', nargs='?', help='name [PATH:VERSION] of recipe')
         run.add_argument('--path', help='path of recipe file')
         run.add_argument('-f', '--force', action="store_true", help='force templates replacement')
         run.set_defaults(cmd=commands.run)
 
-        for _parser in [parser, config, encrypt, genkey, recipes, pull, rm, run]:
+        for _parser in [parser, config, encrypt, genkey, pull, recipes, rm, run]:
             _parser.add_argument('--verbose', action="store_true", help='increase output verbosity')
 
         return parser, encrypt

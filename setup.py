@@ -1,5 +1,7 @@
 from setuptools import setup
 
+from baker import __version__
+
 
 def readme():
     with open('README.rst') as f:
@@ -7,13 +9,15 @@ def readme():
 
 
 setup(name='bakercm',
-      version='0.3',
+      version=__version__,
       description='Baker is a decentralized configuration management based on files',
       long_description=readme(),
       classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: BSD License',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: System :: Software Distribution',
       ],
       keywords='baker configuration management',
