@@ -113,4 +113,4 @@ def execute_command_line(args):
         logger.debug(str(traceback.format_exc()))
         logger.log(str(e))
         parser.exit_with_error(
-            '\nERROR: Unexpected error was caught. Add --verbose option for more information.')
+            '\nERROR: Unexpected error was caught. Add --verbose option for more information.\n')
