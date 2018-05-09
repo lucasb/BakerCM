@@ -108,9 +108,9 @@ def execute_command_line(args):
         logger.init()
         logger.log('Baker start <:::> \n')
         parser.execute()
-        logger.log('\n All done with success!  \o/')
+        logger.log('\nAll done with success!  \o/')
     except Exception as e:
         logger.debug(str(traceback.format_exc()))
         logger.log(str(e))
         parser.exit_with_error(
-            'ERROR: Unexpected error was caught. Add --verbose option for more information \n')
+            '\nERROR: Unexpected error was caught. Add --verbose option for more information.\n')

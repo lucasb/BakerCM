@@ -1,8 +1,9 @@
 import re
 import hashlib
 
-from os import makedirs, path
+from os import path
 from urllib.request import urlretrieve
+from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from datetime import datetime
 
@@ -141,8 +142,12 @@ def download(url, target=None, force=False):
 
     if force or not path.isfile(file_path):
         Storage.create_folders(storage_folder)
-        urlretrieve(url, file_path)
-        logger.log(url, 'download DONE!')
+        try:
+            urlretrieve(url, file_path)
+            logger.log(url, 'download DONE!')
+        except HTTPError as e:
+            e.msg += ": URL '%s' cannot be downloaded" % url
+            raise e
     else:
         logger.log(url, 'from CACHE!')
 
