@@ -43,7 +43,7 @@ class Parser:
         description = 'Baker is a decentralized configuration management based on files. <:::>'
         help_commands = "Run 'baker COMMAND --help' for more info on a command"
 
-        parser = argparse.ArgumentParser(prog='Baker', description=description)
+        parser = argparse.ArgumentParser(prog='baker', description=description)
         parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
         subparsers = parser.add_subparsers(title='commands', metavar='<COMMAND>',
                                            help=help_commands)
