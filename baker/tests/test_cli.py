@@ -10,6 +10,11 @@ class TestCLI(TestCase):
         output = output.decode("utf-8")
         self.assertTrue('usage:' in output)
 
+    def test_show_help_no_option(self):
+        output = Popen(['baker'], stdout=PIPE).communicate()[0]
+        output = output.decode("utf-8")
+        self.assertTrue('usage:' in output)
+
     def test_show_version(self):
         output = Popen(['baker', '--version'], stdout=PIPE).communicate()[0]
         output = output.decode("utf-8")
