@@ -15,9 +15,10 @@ class RunTests(Command):
     def finalize_options(self):
         pass
 
-    def run(self):
+    @staticmethod
+    def run():
         """Run all tests!"""
-        err = call(['py.test', '--cov=baker', '--cov-report=term-missing'])
+        err = call(['py.test', '--cov=baker', '--cov-report=term-missing'], shell=True)
         raise SystemExit(err)
 
 
