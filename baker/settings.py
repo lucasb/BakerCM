@@ -75,8 +75,15 @@ def values(custom_only=False):
     """
     List of settings custom and defaults
     """
-    if custom_only:
-        return Storage.file(_BAKERC_PATH)
+    if custom_only and Path(_BAKERC_PATH).is_file():
+        lines = Storage.file(_BAKERC_PATH).split('\n')
+        configs = {}
+
+        for line in lines:
+            if line:
+                key, val = line.split('=')
+                configs[key] = val
+        return configs
     return globals()['BAKER_SETTINGS']
 
 

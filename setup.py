@@ -1,3 +1,4 @@
+from sys import platform
 from setuptools import Command, find_packages, setup
 from subprocess import call
 
@@ -18,7 +19,8 @@ class RunTests(Command):
     @staticmethod
     def run():
         """Run all tests!"""
-        err = call(['py.test', '--cov=baker', '--cov-report=term-missing'], shell=True)
+        err = call(['py.test', '--cov=baker', '--cov-report=term-missing'],
+                   shell=(platform == 'win32'))
         raise SystemExit(err)
 
 
