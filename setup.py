@@ -48,9 +48,6 @@ setup(name='bakercm',
       license='BSD3',
       packages=find_packages(exclude=['docs', 'example', 'tests', '.github', '.git']),
       test_suite='py.test',
-      setup_requires=[
-          'flake8'
-      ],
       install_requires=[
           'pycryptodome==3.4.11',
       ],

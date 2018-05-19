@@ -5,6 +5,7 @@ python:
 
 install:
   - pip install codecov
+  - pip install flake8
   - python setup.py develop
 
 before_script:
