@@ -1,5 +1,9 @@
 BakerCM
 =======
+
+.. image:: https://badges.gitter.im/bakerchat/Lobby.svg
+   :alt: Join the chat at https://gitter.im/bakerchat/Lobby
+   :target: https://gitter.im/bakerchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 |travisci| |codecov|
 
 BakerCM is a Decentralized Configuration Management Based on Files.
