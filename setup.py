@@ -47,15 +47,18 @@ setup(name='bakercm',
       author_email='lucasboscaini@gmail.com',
       license='BSD3',
       packages=find_packages(exclude=['docs', 'example', 'tests', '.github', '.git']),
+      test_suite='py.test',
+      setup_requires=[
+          'flake8'
+      ],
       install_requires=[
           'pycryptodome==3.4.11',
       ],
-      test_suite='py.test',
       tests_require=[
           'coverage',
           'pytest',
           'pytest-cov',
-          'flake8'],
+      ],
       cmdclass={
           'test': RunTests
       },
