@@ -47,7 +47,7 @@ setup(name='bakercm',
       author='Lucas Boscaini',
       author_email='lucasboscaini@gmail.com',
       license='BSD3',
-      packages=find_packages(exclude=['docs', 'example', 'tests']),
+      packages=find_packages(exclude=['docs', 'example', 'tests', '.github', '.git']),
       install_requires=[
           'pycryptodome==3.4.11',
       ],
