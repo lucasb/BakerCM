@@ -59,7 +59,7 @@ class BakerTemplate(Template):
     delimiter = '{{'
     pattern = r'''
         \{\{\ *(?:
-        (?P<escaped>\\)                     | # escape with {{\escape}} or {{\ escape }}} 
+        (?P<escaped>\\)                     | # escape with {{\escape}} or {{\ escape }}}
         (?P<named>[_a-z][_a-z0-9]*)\ *}}    | # identifier {{var}} or {{ var }}
         \b\B(?P<braced>)                    | # braced identifier disabled
         (?P<invalid>)                         # ill-formed delimiter expr

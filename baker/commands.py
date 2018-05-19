@@ -20,11 +20,8 @@ class Commands:
         List of current baker configs
         """
         configs = settings.values(custom_only=not args.all)
-        if args.all:
-            for key, value in configs.items():
-                logger.log(key + '=' + str(value))
-        else:
-            logger.log(configs)
+        for key, value in configs.items():
+            logger.log(key + '=' + str(value))
 
     @staticmethod
     def encrypt(args):
