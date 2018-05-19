@@ -10,7 +10,7 @@ def main():
         # The above import may fail for some other reason. Ensure that the
         # issue is really that Baker is missing to avoid masking other exceptions.
         try:
-            import baker
+            import baker   # noqa: F401
         except ImportError:
             raise ImportError(
                 "Couldn't import Baker. Are you sure it's installed and "
