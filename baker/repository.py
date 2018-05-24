@@ -37,7 +37,7 @@ class Repository:
 
     def pull(self, force):
         """
-        Pull recipe by path and verison
+        Pull recipe by path and version
         """
         url = self._format_url()
         filename = url.rsplit('/', 1)[1]
