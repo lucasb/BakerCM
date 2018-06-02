@@ -115,6 +115,60 @@ To list all settings for baker.
 
     $ baker configs --all
 
+Secrets
+-------
+Secret session keep the encrypt values in recipes. It's work like other variables but instead of plantext values are encrypted and will be decrypt only when a recipe will run to set a template in a environment.
+
+Secret session in recipe
+^^^^^^^^^^
+.. code-block:: ini
+
+    ...
+    
+    [appdb:secrets]
+    PASSWORD = cfce1f5e82798a7fca808d8acae50baa\c092ca0bbc873e99d0a2318efa381355\6e9b48
+    
+    ...
+
+Template is like other variables
+^^^^^^^^^^
+.. code-block:: ini
+
+    database:
+     ...
+     password: '{{ PASSWORD }}'
+
+To encrypt and decrypt values is necessary to genrate a secret key running ``genkey`` command passing a keypass.  
+
+.. code-block:: console
+
+    $ baker genkey myKeyPass
+
+To encrypt value to save in recipes you can use ``encrypt`` command.
+
+.. code-block:: console
+
+    $ baker encrypt valueToEncrypt
+    or encrypt all values in secret section from a recipe 
+    $ baker encrypt --file recipe-to-encrypt.cfg
+
+File System Operations
+--------
+
+
+Remote Recipes
+--------
+
+Others
+--------
+Escape variables in template:
+
+.. code-block:: ini
+
+    escape-conn: '{{\ connection }}'
+
+
+
 .. |gitter| image:: https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat
    :target: https://gitter.im/bakerchat/Lobby
 .. |travisci| image:: https://travis-ci.org/lucasb/BakerCM.svg?branch=master
