@@ -58,6 +58,37 @@ Using Baker
 
 4. Done! File configured.
 
+Options
+-------
+To know more about Baker options just run ``--help -h``, for a help for baker or an option like ``baker run -h``.
+
+.. code-block:: console
+
+    $ baker -h
+    
+    usage: baker [-h] [-v] [--verbose] <COMMAND> ...
+
+    Baker is a decentralized configuration management based on files. <:::>
+
+    optional arguments:
+      -h, --help     show this help message and exit
+      -v, --version  show program's version number and exit
+      --verbose      increase output verbosity
+
+    commands:
+      <COMMAND>      Run 'baker COMMAND --help' for more info on a command
+        configs      list of configs
+        encrypt      encrypt values using secret key
+        genkey       generate a secret key from a key pass
+        pull         pull a recipe with configurations
+        recipes      list recipes locally
+        rm           remove recipes locally
+        run          run configurations from a recipe
+
+Configurations
+--------
+config options
+
 .. |gitter| image:: https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat
    :target: https://gitter.im/bakerchat/Lobby
 .. |travisci| image:: https://travis-ci.org/lucasb/BakerCM.svg?branch=master
