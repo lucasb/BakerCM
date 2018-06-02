@@ -6,21 +6,26 @@ BakerCM is a decentralized configuration management based on files. BakerCM is a
 
 Why Should I Use This?
 -------
-BakerCM is a configuration management that don't need a centrilized server to configure environments. BakerCM is the lightweight tool built on python that configure files from templates.
+BakerCM is a configuration management that doesn't need a centralized server to configure environments. BakerCM is the lightweight tool built on python that configures files from templates.
 
-Secondly, BakerCM can encrypt and decrypt values using secret sections in recipes files. BakerCM cares with security of values to decrypt it in the right environment, so your configuration files can live open with your code and your secrets values still safe.
+Secondly, BakerCM can encrypt and decrypt values using secret sections in recipes files. BakerCM cares about the security of values to decrypt it in the right environment, so your configuration files can live openly with your source code and your secrets values will still safe.
 
-Finally, recipe files can be storage and download from the most used version control servers like: Github, Bitbucket or where  configuration files can be versioned and baker will care to setup your enviroment using the right version.
+Finally, recipe files can be stored and download from the most used versioning control servers like Github, Bitbucket or another server of files where configuration files can be versioned and BakerCM will care to set up your environment using the right version.
 
 Features
 -------
-* one
-* two
+* Configure dynamic values in template files per environment
+* Encrypt and decrypt values to keep it safe
+* Move or copy files in a file system
+* Change permission, owner, and group of files
+* Manage versions of recipe files from most used versioning control servers
+* Customization of BakerCM settings
 
 Installation
 -------
+.. code-block:: console
 
-          pip install bakercm
+    $ pip install bakercm
 
 Using Baker
 -------
