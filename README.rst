@@ -23,7 +23,7 @@ Features
 
 Installation
 -------
-BakerCM must be installed on environment that you want to self configured and it easy once you have python installed.
+BakerCM must be installed on the environment that you want to self-configure. It is easy once you have Python installed.
 
 .. code-block:: console
 
