@@ -85,9 +85,35 @@ To know more about Baker options just run ``--help -h``, for a help for baker or
         rm           remove recipes locally
         run          run configurations from a recipe
 
-Configurations
+Settings
 --------
-config options
+You can customize baker options via settings. For that you need to create a ``.bakerc`` on your HOME directory:
+
+.. code-block:: console
+    
+    $ vim ~/.bakerc
+
+.. code-block:: ini
+
+    DEBUG=False                            # Verbose mode, the default is false
+    ENCODING=utf-8                         # Encode of files and secrets
+    RECIPE_CASE_SENSITIVE=False            # The default config keys are case insensitive
+    REPOSITORY=None                        # Repository url including protocol http/https
+    REPOSITORY_TYPE=None                   # Repository pattern like: 'github', 'bitbucket' or 'custom'
+    REPOSITORY_CUSTOM_PATTERN=None         # Custom repository url for others pattern. 
+                                           # e.g.: '%(repository)s/%(path)s.%(ext)s/%(version)s'
+    STORAGE_RECIPE=~/.baker/recipes/       # Remote recipes are storage
+    STORAGE_RECIPE_INDEX=~/.baker/index    # Baker index items
+    STORAGE_RECIPE_META=~/.baker/meta      # Baker matadata
+    STORAGE_KEY_PATH=~/.baker/baker.key    # Store secret key to encrypt and decrypt secret values
+    STORAGE_TEMPLATES=~/.baker/templates/  # Remote templates are storage
+    TEMPLATE_EXT=tpl                       # Extension for template files. Set 'None' for no extension
+
+To list all settings for baker.
+
+.. code-block:: console
+
+    $ baker configs --all
 
 .. |gitter| image:: https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat
    :target: https://gitter.im/bakerchat/Lobby
