@@ -58,9 +58,65 @@ Using Baker
 
 4. Done! File configured.
 
+Secrets
+-------
+Secret section keeps the encrypted values in recipes. It's work like other variables but instead of plaintext values are encrypted and will be decrypted only when a recipe will run to set a template in an environment.
+
+Secret section in a recipe
+^^^^^^^^^^
+.. code-block:: ini
+
+    ...
+    
+    [appdb:secrets]
+    PASSWORD = cfce1f5e82798a7fca808d8acae50baa\c092ca0bbc873e99d0a2318efa381355\6e9b48
+    
+    ...
+
+In a template, secrets are like other variables
+^^^^^^^^^^
+.. code-block:: ini
+
+    database:
+     ...
+     password: '{{ PASSWORD }}'
+
+To encrypt and decrypt values is necessary to generate a secret key running ``genkey`` command passing a keypass.  
+
+.. code-block:: console
+
+    $ baker genkey myKeyPass
+
+To encrypt value to save in recipes you can use ``encrypt`` command.
+
+.. code-block:: console
+
+    $ baker encrypt valueToEncrypt
+    or to encrypt all values in secret section from a recipe 
+    $ baker encrypt --file recipe-to-encrypt.cfg
+
+File System Operations
+--------
+To change file options on file system you can add options on recipes, in template section. Look options supported in template section:
+
+.. code-block:: ini
+    
+    [appdb:template]
+    template = /path/to/template.conf.tpl       # Template location, it can be a URL too
+    path = /path/to/save/replaced/config.conf   # Target location to save replaced file, 
+                                                # you also can rename the file
+    user = owner                                # Set what user will be the file owner 
+    group = group-of-onwer                      # Set group that this file will belong
+    mode = 0755                                 # Set permission of file using the number format
+
+All options above works fine for Unix OS like. For Windows, the options ``user``, ``group``, ``mode`` are not supported yet.
+
+Remote Recipes
+--------
+
 Options
 -------
-To know more about Baker options just run ``--help -h``, for a help for baker or an option like ``baker run -h``.
+To know more about Baker options just run ``--help -h``, for a help with a specific command the same option works.
 
 .. code-block:: console
 
@@ -115,53 +171,9 @@ To list all settings for baker.
 
     $ baker configs --all
 
-Secrets
--------
-Secret session keep the encrypt values in recipes. It's work like other variables but instead of plantext values are encrypted and will be decrypt only when a recipe will run to set a template in a environment.
-
-Secret session in recipe
-^^^^^^^^^^
-.. code-block:: ini
-
-    ...
-    
-    [appdb:secrets]
-    PASSWORD = cfce1f5e82798a7fca808d8acae50baa\c092ca0bbc873e99d0a2318efa381355\6e9b48
-    
-    ...
-
-Template is like other variables
-^^^^^^^^^^
-.. code-block:: ini
-
-    database:
-     ...
-     password: '{{ PASSWORD }}'
-
-To encrypt and decrypt values is necessary to genrate a secret key running ``genkey`` command passing a keypass.  
-
-.. code-block:: console
-
-    $ baker genkey myKeyPass
-
-To encrypt value to save in recipes you can use ``encrypt`` command.
-
-.. code-block:: console
-
-    $ baker encrypt valueToEncrypt
-    or encrypt all values in secret section from a recipe 
-    $ baker encrypt --file recipe-to-encrypt.cfg
-
-File System Operations
---------
-
-
-Remote Recipes
---------
-
 Others
 --------
-Escape variables in template:
+How to escape variables in a template:
 
 .. code-block:: ini
 
