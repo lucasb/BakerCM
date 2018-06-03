@@ -1,6 +1,6 @@
 BakerCM
 =======
-|gitter| |travisci| |codecov| |codeclimate| |license|
+|pypi| |gitter| |travisci| |codecov| |codeclimate| |license|
 
 BakerCM is a decentralized configuration management based on files. BakerCM is an out of the box tool to auto-configure an environment using recipe files.
 
@@ -242,6 +242,8 @@ Multiple template management is possible in one recipe. For that use different n
     [name2:secrets]
 
 
+.. |pypi| image:: https://badge.fury.io/py/bakercm.svg
+    :target: https://pypi.org/project/bakercm/
 .. |gitter| image:: https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat
    :target: https://gitter.im/bakerchat/Lobby
 .. |travisci| image:: https://travis-ci.org/lucasb/BakerCM.svg?branch=master
