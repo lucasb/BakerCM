@@ -113,10 +113,25 @@ All options above works fine for Unix OS like. For Windows, the options ``user``
 
 Remote Recipes
 --------
+Remote recipes are files stored in a versioning server and BakerCM gets them to configure an environment. It's very useful when you want to store your environment configurations and versioning it, and BakerCM will care to manage any environment you want with the right configuration.
+
+Repository settings
+^^^^^^^^^^
+Repository should be set in settings to Baker know where recipes are stored. For that, change ``~/.bakerc`` file with repository settings.
+
+.. code-block:: ini
+
+    REPOSITORY='https://raw.githubusercontent.com/lucasb/BakerCM/'         # Repository url
+    REPOSITORY_TYPE='github'    # Repository pattern like: 'github', 'bitbucket' or 'custom'
+    
+    # if REPOSITORY_TYPE='custom', REPOSITORY_CUSTOM_PATTERN should be set 
+    #   using special keys special keys: repository, path, ext and version
+    REPOSITORY_CUSTOM_PATTERN='%(repository)s/%(path)s.%(ext)s/%(version)s' 
+
 
 Options
 -------
-To know more about Baker options just run ``--help -h``, for a help with a specific command the same option works.
+To know more about BakerCM options just run ``--help -h``, for a help with a specific command the same option works.
 
 .. code-block:: console
 
@@ -143,7 +158,7 @@ To know more about Baker options just run ``--help -h``, for a help with a speci
 
 Settings
 --------
-You can customize baker options via settings. For that you need to create a ``.bakerc`` on your HOME directory:
+You can customize BakerCM options via settings. For that you need to create a ``.bakerc`` on your HOME directory:
 
 .. code-block:: console
     
@@ -165,7 +180,7 @@ You can customize baker options via settings. For that you need to create a ``.b
     STORAGE_TEMPLATES=~/.baker/templates/  # Remote templates are storage
     TEMPLATE_EXT=tpl                       # Extension for template files. Set 'None' for no extension
 
-To list all settings for baker.
+To list all settings (customized and defaults) for BakerCM.
 
 .. code-block:: console
 
@@ -173,12 +188,16 @@ To list all settings for baker.
 
 Others
 --------
+Escape variables
+^^^^^^^^^^
 How to escape variables in a template:
 
 .. code-block:: ini
 
     escape-conn: '{{\ connection }}'
 
+Multiple templates for a recipe
+^^^^^^^^^^
 Multiple template management is possible in one recipe. For that use different name for each template file that you want to configure. Using the format ``<name>:<section>``.
 
 .. code-block:: ini
