@@ -125,9 +125,39 @@ Repository should be set in settings to Baker know where recipes are stored. For
     REPOSITORY_TYPE='github'    # Repository pattern like: 'github', 'bitbucket' or 'custom'
     
     # if REPOSITORY_TYPE='custom', REPOSITORY_CUSTOM_PATTERN should be set 
-    #   using special keys special keys: repository, path, ext and version
-    REPOSITORY_CUSTOM_PATTERN='%(repository)s/%(path)s.%(ext)s/%(version)s' 
+    #                using special keys: repository, path, ext and version
+    REPOSITORY_CUSTOM_PATTERN='%(repository)s/%(path)s.%(ext)s/%(version)s'
 
+Remote recipes commands
+^^^^^^^^^^
+To get a recipe from a repository use command ``pull`` with name argument, ``name`` format is <path>:<version>, where the path is the location in the repository to recipe file and version of the recipe.
+
+.. code-block:: console
+
+    $ baker pull example/dev2:0.4.2
+    to force donwload of recipe use option -f
+    $ baker pull -f example/dev:0.4.2
+ 
+To list all recipes and versions saved in an environment use command ``recipes``.
+ 
+.. code-block:: console
+
+    $ baker recipes
+    
+    RECIPE_ID        REMOTE         VERSION        FILENAME        CREATED 
+    af33908tg        example/dev2   0.4.2          dev2.cfg        2018-06-03 06:18
+
+To remove some recipe stored locally use command ``rm`` with ``RECIPE_ID``.
+
+.. code-block:: console
+
+    $ baker rm af33908tg
+
+Also, you can use command ``run`` to pull a recipe and run it using ``name`` argument.
+
+.. code-block:: console
+
+    $ baker run example/dev2:0.4.2
 
 Options
 -------
