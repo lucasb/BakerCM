@@ -179,6 +179,18 @@ How to escape variables in a template:
 
     escape-conn: '{{\ connection }}'
 
+Multiple template management is possible in one recipe. For that use different name for each template file that you want to configure. Using the format ``<name>:<section>``.
+
+.. code-block:: ini
+
+    [name1:template]
+    ...
+    [name1:variable]
+    
+    ...
+    [name2:template]
+    ...
+    [name2:secrets]
 
 
 .. |gitter| image:: https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat
