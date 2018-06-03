@@ -5,7 +5,7 @@ BakerCM
 BakerCM is a decentralized configuration management based on files. BakerCM is an out of the box tool to auto-configure an environment using recipe files.
 
 Why Should I Use This?
--------
+----------------------
 BakerCM is a configuration management that doesn't need a centralized server to configure environments. BakerCM is the lightweight tool built on Python (version 3) that configures files from templates.
 
 Secondly, BakerCM can encrypt and decrypt values using secret sections in recipes files. BakerCM cares about the security of values to decrypt it in the right environment, so your configuration files can live openly with your source code and your secrets values will still safe.
@@ -13,7 +13,7 @@ Secondly, BakerCM can encrypt and decrypt values using secret sections in recipe
 Finally, recipe files can be stored and download from the most used versioning control servers like Github, Bitbucket or another server of files where configuration files can be versioned and BakerCM will care to set up your environment using the right version.
 
 Features
--------
+--------
 * Configure dynamic values in template files per environment
 * Encrypt and decrypt values to keep it safe
 * Move or copy files in a file system
@@ -22,7 +22,7 @@ Features
 * Customization of BakerCM settings
 
 Installation
--------
+------------
 BakerCM must be installed on the environment that you want to self-configure. It is easy once you have Python installed.
 
 .. code-block:: console
@@ -30,7 +30,7 @@ BakerCM must be installed on the environment that you want to self-configure. It
     $ pip install bakercm
 
 Using Baker
--------
+-----------
 1. Create a recipe like simple.cfg
 
 .. code-block:: ini
@@ -63,7 +63,7 @@ Secrets
 Secret section keeps the encrypted values in recipes. It's work like other variables but instead of plaintext values are encrypted and will be decrypted only when a recipe will run to set a template in an environment.
 
 Secret section in a recipe
-^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: ini
 
     ...
@@ -74,7 +74,7 @@ Secret section in a recipe
     ...
 
 In a template, secrets are like other variables
-^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: ini
 
     database:
@@ -96,7 +96,7 @@ To encrypt value to save in recipes you can use ``encrypt`` command.
     $ baker encrypt --file recipe-to-encrypt.cfg
 
 File System Operations
---------
+----------------------
 To change file options on file system you can add options on recipes, in template section. Look options supported in template section:
 
 .. code-block:: ini
@@ -112,11 +112,11 @@ To change file options on file system you can add options on recipes, in templat
 All options above works fine for Unix OS like. For Windows, the options ``user``, ``group``, ``mode`` are not supported yet.
 
 Remote Recipes
---------
+--------------
 Remote recipes are files stored in a versioning server and BakerCM gets them to configure an environment. It's very useful when you want to store your environment configurations and versioning it, and BakerCM will care to manage any environment you want with the right configuration.
 
 Repository settings
-^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 Repository should be set in settings to Baker know where recipes are stored. For that, change ``~/.bakerc`` file with repository settings.
 
 .. code-block:: ini
@@ -129,7 +129,7 @@ Repository should be set in settings to Baker know where recipes are stored. For
     REPOSITORY_CUSTOM_PATTERN='%(repository)s/%(path)s.%(ext)s/%(version)s'
 
 Remote recipes commands
-^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 To get a recipe from a repository use command ``pull`` with name argument, ``name`` format is <path>:<version>, where the path is the location in the repository to recipe file and version of the recipe.
 
 .. code-block:: console
@@ -219,7 +219,7 @@ To list all settings (customized and defaults) for BakerCM.
 Others
 --------
 Escape variables
-^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 How to escape variables in a template:
 
 .. code-block:: ini
@@ -227,7 +227,7 @@ How to escape variables in a template:
     escape-conn: '{{\ connection }}'
 
 Multiple templates for a recipe
-^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Multiple template management is possible in one recipe. For that use different name for each template file that you want to configure. Using the format ``<name>:<section>``.
 
 .. code-block:: ini
