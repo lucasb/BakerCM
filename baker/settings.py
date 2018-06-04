@@ -1,12 +1,13 @@
 from configparser import ConfigParser
-from pathlib import Path
+from os import path
+
 from baker.storage import Storage
 
 
-_HOME_PATH = str(Path.home())
+_HOME_PATH = str(path.expanduser("~"))
 _BAKER_PATH = _HOME_PATH + '/.baker'
 _BAKERC_PATH = _HOME_PATH + '/.bakerc'
-
+print(_HOME_PATH)
 _default_values = {
     # DEBUG mode is False as default, it can be change in config file.
     # Using option --verbose in command line DEBUG change to true.
@@ -75,7 +76,7 @@ def values(custom_only=False):
     """
     List of settings custom and defaults
     """
-    if custom_only and Path(_BAKERC_PATH).is_file():
+    if custom_only and path.isfile(_BAKERC_PATH):
         lines = Storage.file(_BAKERC_PATH).split('\n')
         configs = {}
 
@@ -97,7 +98,7 @@ def _load_bakerc():
             return lower_str == 'true'
         return string
 
-    if Path(_BAKERC_PATH).is_file():
+    if path.isfile(_BAKERC_PATH):
         parser = ConfigParser()
         Storage.parser(_BAKERC_PATH, parser, chain_items=("[DEFAULT]",))
 
