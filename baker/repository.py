@@ -2,7 +2,8 @@ import re
 import hashlib
 
 from os import path
-from urllib.request import urlretrieve
+from urllib.request import urlopen
+from urllib.request import Request
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from datetime import datetime
@@ -137,13 +138,18 @@ def download(url, target=None, force=False):
         raise TypeError("Str '%s' is not a valid url." % url)
 
     storage_folder = target or settings.get('STORAGE_TEMPLATES')
+    auth = str(settings.get('REPOSITORY_AUTH')).replace("'", '')
     file_name = path.basename(urlsplit(url).path)
     file_path = storage_folder + file_name
 
     if force or not path.isfile(file_path):
         Storage.create_folders(storage_folder)
         try:
-            urlretrieve(url, file_path)
+            request = Request(url)
+            if auth:
+                request.add_header('Authorization', auth)
+            with urlopen(request) as response:
+                Storage.file(file_path, response.read(), 'wb')
             logger.log(url, 'download DONE!')
         except HTTPError as e:
             e.msg += ": URL '%s' cannot be downloaded" % url

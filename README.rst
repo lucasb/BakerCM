@@ -123,7 +123,11 @@ Repository should be set in settings to Baker know where recipes are stored. For
 
     REPOSITORY='https://raw.githubusercontent.com/lucasb/BakerCM/'         # Repository url
     REPOSITORY_TYPE='github'    # Repository pattern like: 'github', 'bitbucket' or 'custom'
-    
+
+    # if authorization is necessary to read files from repository you can
+    # add authorization in this setting.
+    REPOSITORY_AUTH='Basic YmFrZXI6YmFrZXJjbQ=='
+
     # if REPOSITORY_TYPE='custom', REPOSITORY_CUSTOM_PATTERN should be set 
     #                using special keys: repository, path, ext and version
     REPOSITORY_CUSTOM_PATTERN='%(repository)s/%(path)s.%(ext)s/%(version)s'
@@ -201,6 +205,8 @@ You can customize BakerCM options via settings. For that you need to create a ``
     RECIPE_CASE_SENSITIVE=False            # The default config keys are case insensitive
     REPOSITORY=None                        # Repository url including protocol http/https
     REPOSITORY_TYPE=None                   # Repository pattern like: 'github', 'bitbucket' or 'custom'
+    REPOSITORY_AUTH=None                   # Authorization to read files from repository. Value is set as a header.
+                                           # e.g.: 'Basic YmFrZXI6YmFrZXJjbQ=='
     REPOSITORY_CUSTOM_PATTERN=None         # Custom repository url for others pattern. 
                                            # e.g.: '%(repository)s/%(path)s.%(ext)s/%(version)s'
     STORAGE_RECIPE=~/.baker/recipes/       # Remote recipes are storage
