@@ -26,6 +26,10 @@ _default_values = {
     # Pattern can be customized setting it as 'custom' and filling REPOSITORY_CUSTOM_PATTERN config.
     'REPOSITORY_TYPE': None,
 
+    # Authorization to read files from repository. This value is set as a header.
+    # For basic the value must be encode in base 64. E.g.: 'Basic YmFrZXI6YmFrZXJjbQ=='
+    'REPOSITORY_AUTH': None,
+
     # Customization of repository access the instructions with configurations.
     # To build pattern use variables to build url to access config in a remote repository.
     # E.g.: '%(repository)s/%(path)s.%(ext)s/%(version)s'

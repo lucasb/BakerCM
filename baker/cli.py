@@ -79,7 +79,7 @@ class Parser:
         run.add_argument('name', nargs='?', help='name [PATH:VERSION] of recipe')
         run.add_argument('--path', help='path of recipe file')
         run.add_argument('-f', '--force', action="store_true", help='force templates replacement')
-        run.set_defaults(cmd=commands.run)
+        run.set_defaults(cmd=commands.run, multiprocess=True)
 
         for _parser in [parser, config, encrypt, genkey, pull, recipes, rm, run]:
             _parser.add_argument('--verbose', action="store_true", help='increase output verbosity')

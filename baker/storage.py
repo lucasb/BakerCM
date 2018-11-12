@@ -47,14 +47,15 @@ class Storage:
             )
 
     @staticmethod
-    def file(location, content=None):
+    def file(location, content=None, mode=None):
         """
         Read and write raw values from file
         """
         if content:
             directory = path.split(location)[0]
             Storage.create_folders(directory)
-            with open(location, 'w+') as f:
+            mode = mode or 'w+'
+            with open(location, mode) as f:
                 f.write(content)
         else:
             try:

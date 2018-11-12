@@ -103,9 +103,14 @@ def execute_command_line(args):
     try:
         settings.load(DEBUG=options.verbose)
         logger.init()
-        logger.log('Baker start <:::> \n')
+
+        if 'multiprocess' in options:
+            logger.log('Baker start <:::> \n')
+
         parser.execute()
-        logger.log('\nAll done with success!  \o/')
+
+        if 'multiprocess' in options:
+            logger.log('\nAll done with success!  \o/')
     except Exception as e:
         logger.debug(str(traceback.format_exc()))
         logger.log(str(e))
