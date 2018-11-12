@@ -110,7 +110,7 @@ def execute_command_line(args):
         parser.execute()
 
         if 'multiprocess' in options:
-            logger.log('\nAll done with success! \ o /')
+            logger.log('\nAll done with success! \\ o /')
     except Exception as e:
         logger.debug(str(traceback.format_exc()))
         logger.log(str(e))
