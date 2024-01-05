@@ -59,7 +59,7 @@ setup(name='bakercm',
       packages=find_packages(exclude=['docs', 'example', 'tests', '.github', '.git']),
       test_suite='py.test',
       install_requires=[
-          'pycryptodome==3.6.6',
+          'pycryptodome==3.19.1',
       ],
       tests_require=[
           'coverage',
