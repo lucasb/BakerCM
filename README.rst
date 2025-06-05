@@ -6,7 +6,7 @@ BakerCM is a decentralized configuration management based on files. BakerCM is a
 
 Why Should I Use This?
 ----------------------
-BakerCM is a configuration management that doesn't need a centralized server to configure environments. BakerCM is the lightweight tool built on Python (version 3) that configures files from templates.
+BakerCM is a configuration management that doesn't need a centralized server to configure environments. BakerCM is the lightweight tool built on Python (version 3.6 through 3.12) that configures files from templates.
 
 Secondly, BakerCM can encrypt and decrypt values using secret sections in recipes files. BakerCM cares about the security of values to decrypt it in the right environment, so your configuration files can live openly with your source code and your secrets values will still safe.
 
@@ -23,7 +23,7 @@ Features
 
 Installation
 ------------
-BakerCM must be installed on the environment that you want to self-configure. It is easy once you have Python installed.
+BakerCM must be installed on the environment that you want to self-configure. It is easy once you have Python (3.6–3.12) installed.
 
 .. code-block:: console
 
@@ -67,10 +67,10 @@ Secret section in a recipe
 .. code-block:: ini
 
     ...
-    
+
     [appdb:secrets]
     PASSWORD = cfce1f5e82798a7fca808d8acae50baa\c092ca0bbc873e99d0a2318efa381355\6e9b48
-    
+
     ...
 
 In a template, secrets are like other variables
@@ -100,7 +100,7 @@ File System Operations
 To change file options on file system you can add options on recipes, in template section. Look options supported in template section:
 
 .. code-block:: ini
-    
+
     [appdb:template]
     template = /path/to/template.conf.tpl       # Template location, it can be a URL too
     path = /path/to/save/replaced/config.conf   # Target location to save replaced file, 
@@ -139,15 +139,15 @@ To get a recipe from a repository use command ``pull`` with name argument, ``nam
 .. code-block:: console
 
     $ baker pull example/dev2:0.4.2
-    to force donwload of recipe use option -f
+    to force download of recipe use option -f
     $ baker pull -f example/dev:0.4.2
- 
+
 To list all recipes and versions saved in an environment use command ``recipes``.
- 
+
 .. code-block:: console
 
     $ baker recipes
-    
+
     RECIPE_ID        REMOTE         VERSION        FILENAME        CREATED 
     af33908tg        example/dev2   0.4.2          dev2.cfg        2018-06-03 06:18
 
@@ -170,7 +170,7 @@ To know more about BakerCM options just run ``--help -h``, for a help with a spe
 .. code-block:: console
 
     $ baker -h
-    
+
     usage: baker [-h] [-v] [--verbose] <COMMAND> ...
 
     Baker is a decentralized configuration management based on files. <:::>
@@ -195,7 +195,7 @@ Settings
 You can customize BakerCM options via settings. For that you need to create a ``.bakerc`` on your HOME directory:
 
 .. code-block:: console
-    
+
     $ vim ~/.bakerc
 
 .. code-block:: ini
@@ -222,6 +222,27 @@ To list all settings (customized and defaults) for BakerCM.
 
     $ baker configs --all
 
+Development
+----------
+Testing
+^^^^^^^
+BakerCM uses tox to run tests against multiple Python versions. To run the tests:
+
+.. code-block:: console
+
+    $ pip install tox
+    $ tox
+
+This will run the tests against Python 3.7 to 3.12 with coverage reporting.
+
+To run tests against a specific Python version:
+
+.. code-block:: console
+
+    $ tox -e py37  # For Python 3.7
+    $ tox -e py311  # For Python 3.11
+    $ tox -e py312  # For Python 3.12
+
 Others
 --------
 Escape variables
@@ -241,7 +262,7 @@ Multiple template management is possible in one recipe. For that use different n
     [name1:template]
     ...
     [name1:variable]
-    
+
     ...
     [name2:template]
     ...

@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 
 from string import Template
@@ -96,4 +97,7 @@ class BakerTemplate(Template):
             if mo.group('invalid') is not None:
                 self._invalid(mo)
             raise ValueError('Unrecognized named group in pattern', self.pattern)
-        return self.pattern.sub(convert, self.template)
+
+        # Compile the pattern with re.VERBOSE flag to ensure compatibility across Python versions
+        compiled_pattern = re.compile(self.pattern, re.VERBOSE)
+        return compiled_pattern.sub(convert, self.template)
