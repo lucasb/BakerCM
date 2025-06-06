@@ -77,7 +77,7 @@ class Repository:
                 raise AttributeError(
                     "REPOSITORY_CUSTOM_PATTERN must be set when REPOSITORY_TYPE is 'custom'")
         elif self.repository_type not in self.repository_patterns.keys():
-                raise AttributeError("REPOSITORY_TYPE '%s' is not supported" % self.repository_type)
+            raise AttributeError("REPOSITORY_TYPE '%s' is not supported" % self.repository_type)
 
     def _format_url(self):
         pattern = self.repository_custom if self.repository_type == 'custom' \

@@ -6,7 +6,7 @@ BakerCM is a decentralized configuration management based on files. BakerCM is a
 
 Why Should I Use This?
 ----------------------
-BakerCM is a configuration management that doesn't need a centralized server to configure environments. BakerCM is the lightweight tool built on Python (version 3.6 through 3.12) that configures files from templates.
+BakerCM is a configuration management that doesn't need a centralized server to configure environments. BakerCM is the lightweight tool built on Python (version 3.6 through 3.13) that configures files from templates.
 
 Secondly, BakerCM can encrypt and decrypt values using secret sections in recipes files. BakerCM cares about the security of values to decrypt it in the right environment, so your configuration files can live openly with your source code and your secrets values will still safe.
 
@@ -233,7 +233,7 @@ BakerCM uses tox to run tests against multiple Python versions. To run the tests
     $ pip install tox
     $ tox
 
-This will run the tests against Python 3.7 to 3.12 with coverage reporting.
+This will run the tests against Python 3.7 to 3.13 with coverage reporting.
 
 To run tests against a specific Python version:
 
@@ -242,7 +242,7 @@ To run tests against a specific Python version:
     $ tox -e py37  # For Python 3.7
     $ tox -e py311  # For Python 3.11
     $ tox -e py312  # For Python 3.12
-
+    $ tox -e py313  # For Python 3.13
 Others
 --------
 Escape variables
@@ -271,12 +271,4 @@ Multiple template management is possible in one recipe. For that use different n
 
 .. |pypi| image:: https://badge.fury.io/py/bakercm.svg
     :target: https://pypi.org/project/bakercm/
-.. |gitter| image:: https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat
-   :target: https://gitter.im/bakerchat/Lobby
-.. |travisci| image:: https://travis-ci.org/lucasb/BakerCM.svg?branch=master
-    :target: https://travis-ci.org/lucasb/BakerCM   
-.. |codecov| image:: https://codecov.io/gh/lucasb/BakerCM/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/lucasb/BakerCM
-.. |codeclimate| image:: https://codeclimate.com/github/lucasb/BakerCM/badges/gpa.svg
-    :target: https://codeclimate.com/github/lucasb/BakerCM
 .. |license| image:: https://img.shields.io/badge/license-BSD3-green.svg
