@@ -69,7 +69,7 @@ class RecipeParser:
 
         Storage.parser(self.recipe_file, self.parser, write_mod=True)
 
-    @ staticmethod
+    @staticmethod
     def _get_values(parser, section):
         """
         Helper to get values from a section in parser
