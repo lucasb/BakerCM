@@ -1,6 +1,6 @@
 BakerCM
 =======
-|pypi| |license|
+|pypi|license|
 
 BakerCM is a decentralized configuration management based on files. BakerCM is an out of the box tool to auto-configure an environment using recipe files.
 
