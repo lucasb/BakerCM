@@ -33,6 +33,7 @@ setup(name='bakercm',
       version=__version__,
       description='Baker is a decentralized configuration management based on files',
       long_description=readme(),
+      long_description_content_type='text/markdown',
       classifiers=[
           'Intended Audience :: Developers',
           'Development Status :: 4 - Beta',
